@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 
 namespace SmartQQLib.API.Http
@@ -22,11 +23,13 @@ namespace SmartQQLib.API.Http
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>       
-        public byte[] GET(string url, string referer)
+        public byte[] GETbyte(string url, string referer)
         {
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.UserAgent = ApiUrl.UserAgent;
+                request.ContentType = ApiUrl.ContentType;
                 request.Referer = referer;
                 request.Method = "get";
 
@@ -38,6 +41,8 @@ namespace SmartQQLib.API.Http
                 request.CookieContainer = mCookiesContainer;  //启用cookie
 
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+
                 Stream response_stream = response.GetResponseStream();
 
                 int count = (int)response.ContentLength;
@@ -59,12 +64,39 @@ namespace SmartQQLib.API.Http
             }
         }
 
+        public string GET(string url, string referer)
+        {
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.UserAgent = ApiUrl.UserAgent;
+            request.ContentType = ApiUrl.ContentType;
+            request.Referer = referer;
+            request.Method = "get";
+
+            if (mCookiesContainer == null)
+            {
+                mCookiesContainer = new CookieContainer();
+            }
+
+            request.CookieContainer = mCookiesContainer;  //启用cookie
+
+            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+            //MessageBox.Show(response);
+            StreamReader sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
+            return sr.ReadToEnd();           
+
+        }
+
         public string GET_UTF8String(string url, string referer)
         {
-            byte[] bytes = this.GET(url, referer);
+            byte[] bytes = this.GETbyte(url, referer);
             string utf8str = Encoding.UTF8.GetString(bytes);
             return utf8str;
         }
+
+
+
+
+
 
         /// <summary>
         /// 向服务器发送post请求 返回服务器回复数据
@@ -79,6 +111,8 @@ namespace SmartQQLib.API.Http
                 byte[] request_body = Encoding.UTF8.GetBytes(body);
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.UserAgent = ApiUrl.UserAgent;
+                request.ContentType = ApiUrl.ContentType;
                 request.Referer = referer;
                 request.Method = "post";
                 request.ContentLength = request_body.Length;

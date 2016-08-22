@@ -26,16 +26,20 @@ namespace SmartQQLib.API
         public Image GetQRCodeImage()
         {
             string url = ApiUrl.Get_QrCode;
-            var bytes = http.GET(url, "");
+            var bytes = http.GETbyte(url, "");
             return Image.FromStream(new MemoryStream(bytes));
+
+
+
         }
 
         public string GetAuthStatus()
         {
 
-            byte[] bytes = http.GET(ApiUrl.Verify_QrCode[0], ApiUrl.Verify_QrCode[1]);
-            string result = Encoding.UTF8.GetString(bytes);
-           
+            //byte[] bytes = http.GET(ApiUrl.Verify_QrCode[0], ApiUrl.Verify_QrCode[1]);
+            //string result = Encoding.UTF8.GetString(bytes);
+            string result = http.GET(ApiUrl.Verify_QrCode[0], ApiUrl.Verify_QrCode[1]);
+
             return result;
         }
 
@@ -43,14 +47,13 @@ namespace SmartQQLib.API
         {
 
             User user = new User();
-            user.qqNum = Convert.ToInt32((http.GetCookie("pac_uid").ToString()).Substring(2));
+            user.qqNum = Convert.ToInt32((http.GetCookie("superuin").ToString()).Substring(2));
             return user;
         }
 
         public AuthRedirectResult AuthRedirect(string redirect_uri)
         {
-            byte[] bytes = http.GET(redirect_uri, ApiUrl.Verify_QrCode[1]);
-            string rep = Encoding.UTF8.GetString(bytes);
+            string rep = http.GET(redirect_uri, ApiUrl.Verify_QrCode[1]);
 
             AuthRedirectResult result = new AuthRedirectResult();
             result.ptwebqq = http.GetCookie("ptwebqq").ToString();
@@ -59,7 +62,7 @@ namespace SmartQQLib.API
         public Image GetUserLogo(int qqnum)
         {
             string url = "http://q1.qlogo.cn/g?b=qq&nk="+ qqnum+ "&s=5";
-            var bytes = http.GET(url, "");
+            var bytes = http.GETbyte(url, "");
             return Image.FromStream(new MemoryStream(bytes));
         }
 

@@ -65,18 +65,22 @@ namespace SmartQQLib
                 //检查扫描
                 while (true)
                 {
-                    
+                    Thread.Sleep(1000);
                     var authresult = api.GetAuthStatus();
-                    MessageBox.Show(authresult);
                     AuthResult AuthStatus = new AuthResult();
                     if (authresult.Contains("成功"))
                     {
                         // 登录成功
-                        var redirectResult = api.AuthRedirect(AuthStatus.redirect_uri);
+
+                        string redirect_url = authresult.Split(new string[] { "," }, StringSplitOptions.None)[2];
+                        redirect_url = redirect_url.Substring(1, redirect_url.Length-2);
+
+                        MessageBox.Show(redirect_url);
+                        var redirectResult = api.AuthRedirect(redirect_url);
                         AuthStatus.authStatus = "已获授权";
                         AuthStatus.StatusCode = 3;
-                        //User Currentuser = new User();
-                        //Currentuser.qqNum=api.GetCurrentQQ().qqNum;
+ //                       User Currentuser = new User();
+ //                       Currentuser.qqNum=api.GetCurrentQQ().qqNum;
  //                       var UserLogo = api.GetUserLogo(api.GetCurrentQQ().qqNum);
                         Debug.Write("已获授权\n");
                         IsLogin = true;
@@ -107,14 +111,14 @@ namespace SmartQQLib
                     }
                 }
 
+                MessageBox.Show("验证成功");
+
             } while (!IsLogin);
 
 
 
 
         }
-
-
 
     }
     }

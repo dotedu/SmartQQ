@@ -47,7 +47,7 @@
             this.LoginLabel.Name = "LoginLabel";
             this.LoginLabel.Size = new System.Drawing.Size(260, 23);
             this.LoginLabel.TabIndex = 1;
-            this.LoginLabel.Text = "label1";
+            this.LoginLabel.Text = "正在获取二维码";
             this.LoginLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LoginForm

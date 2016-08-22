@@ -77,6 +77,10 @@ namespace SmartQQLib
 
                         MessageBox.Show(redirect_url);
                         var redirectResult = api.AuthRedirect(redirect_url);
+                        string StrPTwebqq = (redirectResult.ptwebqq).Replace("ptwebqq=", "");
+
+                        MessageBox.Show(StrPTwebqq);
+
                         AuthStatus.authStatus = "已获授权";
                         AuthStatus.StatusCode = 3;
  //                       User Currentuser = new User();

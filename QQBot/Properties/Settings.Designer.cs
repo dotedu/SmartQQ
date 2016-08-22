@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace QQlogin.Properties
+namespace QQBot.Properties
 {
 
 

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartQQLib", "SmartQQLib\SmartQQLib.csproj", "{23CDCC8F-0BB6-4B1B-929C-47CAEF2BBF60}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartQQ", "SmartQQ\SmartQQ.csproj", "{1B58EB9D-DD01-45A7-ACF7-4F5E679D7C24}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{23CDCC8F-0BB6-4B1B-929C-47CAEF2BBF60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23CDCC8F-0BB6-4B1B-929C-47CAEF2BBF60}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23CDCC8F-0BB6-4B1B-929C-47CAEF2BBF60}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23CDCC8F-0BB6-4B1B-929C-47CAEF2BBF60}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B58EB9D-DD01-45A7-ACF7-4F5E679D7C24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B58EB9D-DD01-45A7-ACF7-4F5E679D7C24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B58EB9D-DD01-45A7-ACF7-4F5E679D7C24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B58EB9D-DD01-45A7-ACF7-4F5E679D7C24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

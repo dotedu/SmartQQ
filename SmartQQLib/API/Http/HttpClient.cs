@@ -7,8 +7,10 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartQQ.API.Http
+
+namespace SmartQQLib.API.Http
 {
+
     public class HttpClient
     {
         /// <summary>
@@ -19,12 +21,13 @@ namespace SmartQQ.API.Http
         /// 向服务器发送get请求  返回服务器回复数据
         /// </summary>
         /// <param name="url"></param>
-        /// <returns></returns>
-        public byte[] GET(string url)
+        /// <returns></returns>       
+        public byte[] GET(string url, string referer)
         {
             try
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Referer = referer;
                 request.Method = "get";
 
                 if (mCookiesContainer == null)
@@ -56,13 +59,12 @@ namespace SmartQQ.API.Http
             }
         }
 
-        public string GET_UTF8String(string url)
+        public string GET_UTF8String(string url, string referer)
         {
-            byte[] bytes = this.GET(url);
+            byte[] bytes = this.GET(url, referer);
             string utf8str = Encoding.UTF8.GetString(bytes);
             return utf8str;
         }
-
 
         /// <summary>
         /// 向服务器发送post请求 返回服务器回复数据
@@ -70,13 +72,14 @@ namespace SmartQQ.API.Http
         /// <param name="url"></param>
         /// <param name="body"></param>
         /// <returns></returns>
-        public byte[] POST(string url, string body)
+        public byte[] POST(string url, string referer, string body)
         {
             try
             {
                 byte[] request_body = Encoding.UTF8.GetBytes(body);
 
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+                request.Referer = referer;
                 request.Method = "post";
                 request.ContentLength = request_body.Length;
 
@@ -89,7 +92,7 @@ namespace SmartQQ.API.Http
                     mCookiesContainer = new CookieContainer();
                 }
                 request.CookieContainer = mCookiesContainer;  //启用cookie
-
+                
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 Stream response_stream = response.GetResponseStream();
 
@@ -112,15 +115,12 @@ namespace SmartQQ.API.Http
             }
         }
 
-        public string POST_UTF8String(string url, string body)
+        public string POST_UTF8String(string url, string referer, string body)
         {
-            byte[] bytes = this.POST(url, body);
+            byte[] bytes = this.POST(url, referer, body);
             string utf8str = Encoding.UTF8.GetString(bytes);
             return utf8str;
         }
-
-
-
 
         /// <summary>
         /// 获取指定cookie

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartQQ.API
+namespace SmartQQLib.API
 {
     public class ApiUrl
     {
@@ -15,7 +15,7 @@ namespace SmartQQ.API
             "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1 &s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert &strong_login=1&login_state=10&t=20131024001"
         };
 
-        public static string[] Get_PTwebqq { get; set; } = { "", "" };
+        public static string[] Get_PTwebqq { get; set; } = { "", "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1" };
 
         public static string[] Get_VFwebqq { get; set; } = {
             "http://s.web2.qq.com/api/getvfwebqq?ptwebqq={1}&clientid=53999199&psessionid=&t=" + RandomNum.rd.Next().ToString(),
@@ -45,7 +45,7 @@ namespace SmartQQ.API
             "http://d1.web2.qq.com/channel/send_buddy_msg2",
             "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2"
             };
-        public static string[] Get_Discuss_List{ get; set; } = {
+        public static string[] Get_Discuss_List { get; set; } = {
             "http://s.web2.qq.com/api/get_discus_list?clientid=53999199&psessionid={1}&vfwebqq={2}&t=" + RandomNum.rd.Next().ToString(),
             "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1"
             };
@@ -57,7 +57,7 @@ namespace SmartQQ.API
             "http://s.web2.qq.com/api/get_self_info2?t=0.1",
             "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1"
             };
-        public static string[] Get_Recent_List{ get; set; } = {
+        public static string[] Get_Recent_List { get; set; } = {
             "http://d1.web2.qq.com/channel/get_recent_list2",
             "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2"
             };

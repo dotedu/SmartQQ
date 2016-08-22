@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartQQ.API
+namespace SmartQQLib.API
 {
-    public class RandomNum
+    public class User
     {
-        public static Random rd = new Random();
-
+        public int qqNum;
     }
 }

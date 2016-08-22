@@ -4,23 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QQlogin.API
+namespace SmartQQLib.API
 {
-    class LoginResult
+    public class AuthResult
     {
         /// <summary>
-        /// 201: 已扫描但是未确认登录
-        /// 200: 已确认登录
+        /// 65: 已经失效
+        /// 66: 等待扫描
         /// </summary>
         public int code;
         /// <summary>
-        /// 以base64编码的用户头像图片
-        /// code=201 时可用
+        /// 二维码状态
         /// </summary>
-        public string UserAvatar;
+        public string authStatus;
+        /// <summary>
+        /// 0：失效
+        /// 1：等待扫描
+        /// 2：等待认证
+        /// 3：成功
+        /// </summary>
+        public int StatusCode;
         /// <summary>
         /// 登录重定向Url
-        /// code=200 时可用
         /// </summary>
         public string redirect_uri;
     }

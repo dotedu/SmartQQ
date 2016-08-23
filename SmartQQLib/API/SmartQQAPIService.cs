@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿
 using SmartQQLib.API.Http;
 using System;
 using System.Collections.Generic;
@@ -29,6 +28,7 @@ namespace SmartQQLib.API
         public Image GetQRCodeImage()
         {
             return http.GetImage(ApiUrl.Get_QrCode, "");
+           
 
         }
         /// <summary>
@@ -41,6 +41,8 @@ namespace SmartQQLib.API
 
             string result = http.GET(ApiUrl.Verify_QrCode[0], ApiUrl.Verify_QrCode[1]);
             Debug.Write(result);
+            
+            http.ListCookie();
 
             return result;
         }
@@ -52,11 +54,23 @@ namespace SmartQQLib.API
         /// <returns></returns>
         public string GetPtwebqq(string redirect_uri)
         {
-            http.GET(redirect_uri, ApiUrl.Verify_QrCode[1]);
+            try
+            {
+                http.GET(redirect_uri, ApiUrl.Verify_QrCode[1]);
 
-            string ptwebqq  = http.GetCookie("ptwebqq").ToString();
+                string result = http.GetCookie("ptwebqq").ToString();
+                Debug.Write(result);
+                
+                http.ListCookie();
 
-            return ptwebqq;
+                return result;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
 
         }
 
@@ -67,17 +81,28 @@ namespace SmartQQLib.API
         /// <returns></returns>
         public string GetVfwebqq(string ptwebqq)
         {
-            string GetVfwebqq_URL = ApiUrl.Get_VFwebqq[0] + ptwebqq + ApiUrl.Get_VFwebqq[1];
-            string result = http.GET(GetVfwebqq_URL, ApiUrl.Get_VFwebqq[2]);
-            JObject JoGetDate = (JObject)JsonConvert.DeserializeObject(result);
-            string strVFwebqq = JoGetDate["result"]["vfwebqq"].ToString();
-            Debug.Write(strVFwebqq);
-            return strVFwebqq;
+            try
+            {
+                string GetVfwebqq_URL = ApiUrl.Get_VFwebqq[0] + ptwebqq + ApiUrl.Get_VFwebqq[1];
+                string result = http.GET(GetVfwebqq_URL, ApiUrl.Get_VFwebqq[2]);
+
+                
+                http.ListCookie();
+                return result;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
         }
 
-        public List<object> getUinAndPsessionid(string ptwebqq)
+        public string getUinAndPsessionid(string ptwebqq)
         {
-            List<object> result = new List<object>();
+            List<string> result = new List<string>();
 
             string loginstr = "{\"ptwebqq\":\""+ ptwebqq + "\",\"clientid\": 53999199, \"psessionid\": \"\",\"status\": \"online\"}";
             Debug.Write(loginstr);
@@ -88,19 +113,40 @@ namespace SmartQQLib.API
             try
             {
                 var content = http.POST(ApiUrl.Get_Uin_And_Psessionid[0], ApiUrl.Get_Uin_And_Psessionid[1], "", parameters);
-
+                http.ListCookie();
+                Debug.Write("显示返回内容");
                 Debug.Write(content);
 
-                JObject JoGetDate = (JObject)JsonConvert.DeserializeObject(content);
+                return content;
+            }
+            catch (Exception e)
+            {
 
+                Debug.WriteLine(e);
+            }
+            return null;
 
-                result[1] = JoGetDate["result"]["psessionid"].ToString();
-                Debug.Write(result[0]);
-                result[2] = Convert.ToInt32(JoGetDate["result"]["uin"]);
-                Debug.Write(result[1]);
-                result[0] = http.GetCookie("skey").ToString();
-                Debug.Write(result[2]);
+        }
+
+        public void CookieProxy(string p_skey, string p_uin)
+        {
+            http.AddCookie("p_skey", p_skey, "/", "w.qq.com");
+            http.AddCookie("p_uin", p_uin, "/", "w.qq.com");
+            
+            http.ListCookie();
+        }
+
+        public List<string> GetCookies(string[] namelist)
+        {
+            List<string> result = new List<string>();
+            try
+            {
+                foreach (var name in namelist)
+                {
+                    result.Add(http.GetCookie(name));
+                }
                 return result;
+
             }
             catch (Exception e)
             {

@@ -179,7 +179,7 @@ namespace SmartQQLib.API.Http
                     }
                     else
                     {
-                        if (contenttype == DefaultContentType)
+                        if (contenttype == DefaultContentType| string.IsNullOrEmpty(contenttype))
                         {
 
                             buffer.AppendFormat("{0}={1}", key, parameters[key]);
@@ -232,7 +232,8 @@ namespace SmartQQLib.API.Http
             List<Cookie> cookies = GetAllCookies(mCookiesContainer);
             foreach (Cookie c in cookies)
             {
-                System.Diagnostics.Debug.WriteLine(c);
+                System.Diagnostics.Debug.Write("显示cookie");
+                System.Diagnostics.Debug.WriteLine(c.Name + "-" + c.Value + "-" + c.Path + "-" + c.Domain);
             }
             return null;
         }
@@ -276,6 +277,17 @@ namespace SmartQQLib.API.Http
             return lstCookies;
         }
 
+        public void AddCookie(string name , string value,string path,string domain)
+        {
 
+            Cookie cookie = new Cookie(name, value, path, domain);
+            if (mCookiesContainer == null)
+            {
+                mCookiesContainer = new CookieContainer();
+            }
+
+            mCookiesContainer.Add(cookie);
+
+        }
     }
 }

@@ -40,9 +40,24 @@ namespace SmartQQ
                     LoginLabel.Text = "已确认,正在登陆....";
                 });
             };
+
+            qc.OnLoginSucess = () => {
+                RunInMainthread(() => {
+                    
+                    MessageBox.Show("ptwebqq="+SmartQQLib.API.Cookies.ptwebqq);
+                    MessageBox.Show("vfwebqq=" + SmartQQLib.API.Cookies.vfwebqq);
+                    MessageBox.Show("skey=" + SmartQQLib.API.Cookies.skey);
+                    MessageBox.Show("psessionid=" + SmartQQLib.API.Cookies.psessionid);
+                    MessageBox.Show("uin=" + SmartQQLib.API.Cookies.uin.ToString());
+                });
+            };
+
+
             RunAsync(() => {
                 qc.Run();
             });
+
+            //MessageBox.Show(SmartQQLib.API.Cookies.ptwebqq);
 
         }
 

@@ -42,14 +42,14 @@ namespace SmartQQLib
         public void Run()
         {
             // 启动流程
-            // 1.登陆
-            // 2.初始化
-            // 3.开启系统通知
-            // 4.获得联系人列表
-            // 5.进入同步主循环
+            // 1.获取二维码
+            // 2.检查扫描
+            // 3.获取ptwebqq
+            // 4.获取vfwebqq
+            // 5.获取psessionid和uin、skey
 
 
-            // ----------1.登陆
+            // ----------1.获取二维码
 
             do
             {
@@ -62,67 +62,58 @@ namespace SmartQQLib
 
                 Debug.Write("[*] 正在等待扫码 ....");
                 OnGetQRCodeImage?.Invoke(QRImg);
-                //检查扫描
+                //----------2.检查扫描
                 while (true)
                 {
                     Thread.Sleep(1000);
                     var authresult = api.GetAuthStatus();
-                    AuthResult AuthStatus = new AuthResult();
                     if (authresult.Contains("成功"))
                     {
                         // 登录成功
 
-                        string redirect_url = authresult.Split(new string[] { "," }, StringSplitOptions.None)[2];
-                        redirect_url = redirect_url.Substring(1, redirect_url.Length-2);
+                        string redirect_url = authresult.Split(new string[] { "\'" }, StringSplitOptions.None)[5];
 
                         MessageBox.Show(redirect_url);
-                        var redirectResult = api.AuthRedirect(redirect_url);
-                        string StrPTwebqq = (redirectResult.ptwebqq).Replace("ptwebqq=", "");
 
-                        MessageBox.Show(StrPTwebqq);
+                        //----------2.获取ptwebqq
+                        api.GetPtwebqq(redirect_url);
 
-                        AuthStatus.authStatus = "已获授权";
-                        AuthStatus.StatusCode = 3;
- //                       User Currentuser = new User();
- //                       Currentuser.qqNum=api.GetCurrentQQ().qqNum;
- //                       var UserLogo = api.GetUserLogo(api.GetCurrentQQ().qqNum);
                         Debug.Write("已获授权\n");
-                        IsLogin = true;
+                        //IsLogin = true;
 
                         OnVerifySucess?.Invoke();
                         break;
                     }
                     else if (authresult.Contains("二维码认证中"))
                     {
-                        AuthStatus.authStatus = "二维码已扫描，等待授权";
-                        AuthStatus.StatusCode = 2;
-                        //OnVerifyImage?.Invoke(UserLogo);
                         OnVerifyImage?.Invoke();
 
                     }
                     else if (authresult.Contains("二维码未失效"))
                     {
                         OnScanImage?.Invoke();
-                        AuthStatus.authStatus = "等待二维码扫描及授权";
-                        AuthStatus.StatusCode = 1;
 
                     }
-                    else if (authresult.Contains("65"))
+                    else if (authresult.Contains("二维码已失效"))
                     {
                         Debug.Write("[*] 正在生成二维码 ....");
 
                         OnGetQRCodeImage?.Invoke(QRImg);
                     }
+
                 }
 
-                MessageBox.Show("验证成功");
+                //----------2.获取vfwebqq
+                Cookies.vfwebqq = api.GetVfwebqq(Cookies.ptwebqq);
 
+                api.getUinAndPsessionid(Cookies.ptwebqq);
+                IsLogin = true;
             } while (!IsLogin);
-
+            OnLoginSucess?.Invoke();
 
 
 
         }
 
     }
-    }
+}

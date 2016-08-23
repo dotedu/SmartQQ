@@ -20,6 +20,7 @@ namespace SmartQQLib
         }
         private SmartQQAPIService api = null;
 
+        public Cookies LoginCookies = new Cookies();
 
         public bool IsLogin { get; private set; }
 
@@ -72,11 +73,10 @@ namespace SmartQQLib
                         // 登录成功
 
                         string redirect_url = authresult.Split(new string[] { "\'" }, StringSplitOptions.None)[5];
-
-                        MessageBox.Show(redirect_url);
+                        Debug.Write(redirect_url);
 
                         //----------2.获取ptwebqq
-                        api.GetPtwebqq(redirect_url);
+                        LoginCookies.vfwebqq = api.GetPtwebqq(redirect_url);
 
                         Debug.Write("已获授权\n");
                         //IsLogin = true;
@@ -102,12 +102,21 @@ namespace SmartQQLib
                     }
 
                 }
+                //Cookies.skey = http.GetCookie("skey").ToString();
+                //Debug.Write(Cookies.skey);
 
                 //----------2.获取vfwebqq
-                Cookies.vfwebqq = api.GetVfwebqq(Cookies.ptwebqq);
+                LoginCookies.vfwebqq = api.GetVfwebqq(LoginCookies.ptwebqq);
 
-                api.getUinAndPsessionid(Cookies.ptwebqq);
-                IsLogin = true;
+
+                if (api.getUinAndPsessionid(LoginCookies.ptwebqq)!=null)
+                {
+                    LoginCookies.psessionid = api.getUinAndPsessionid(LoginCookies.ptwebqq)[0].ToString();
+                    LoginCookies.uin = Convert.ToInt32(api.getUinAndPsessionid(LoginCookies.ptwebqq)[1]);
+                    LoginCookies.skey = api.getUinAndPsessionid(LoginCookies.ptwebqq)[2].ToString();
+                    IsLogin = true;
+                }
+
             } while (!IsLogin);
             OnLoginSucess?.Invoke();
 

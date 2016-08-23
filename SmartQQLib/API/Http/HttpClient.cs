@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,164 +13,231 @@ using System.Windows.Forms;
 namespace SmartQQLib.API.Http
 {
 
+
+
     public class HttpClient
     {
+
         /// <summary>
         /// 访问服务器时的cookies
         /// </summary>
         private CookieContainer mCookiesContainer;
+
         /// <summary>
-        /// 向服务器发送get请求  返回服务器回复数据
+        /// 默认UserAgent
         /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>       
-        public byte[] GETbyte(string url, string referer)
+        private static readonly string DefaultUserAgent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36";
+        private static readonly string DefaultContentType = "application/x-www-form-urlencoded";
+        /// <summary>  
+        /// 创建GET方式的HTTP请求  
+        /// </summary>  
+        /// <param name="url">请求的URL</param>  
+        /// <param name="timeout">请求的超时时间</param>  
+        /// <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
+        /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
+        /// <returns></returns>  
+        public HttpWebResponse CreateGetHttpResponse(string url, string referer, int? timeout, string userAgent)
         {
-            try
+            if (string.IsNullOrEmpty(url))
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.UserAgent = ApiUrl.UserAgent;
-                request.ContentType = ApiUrl.ContentType;
-                request.Referer = referer;
-                request.Method = "get";
-
-                if (mCookiesContainer == null)
-                {
-                    mCookiesContainer = new CookieContainer();
-                }
-
-                request.CookieContainer = mCookiesContainer;  //启用cookie
-
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-
-                Stream response_stream = response.GetResponseStream();
-
-                int count = (int)response.ContentLength;
-                int offset = 0;
-                byte[] buf = new byte[count];
-                while (count > 0)  //读取返回数据
-                {
-                    int n = response_stream.Read(buf, offset, count);
-                    if (n == 0) break;
-                    count -= n;
-                    offset += n;
-                }
-                return buf;
+                throw new ArgumentNullException("url");
             }
-            catch (Exception e)
+            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+            request.Method = "GET";
+            if (!string.IsNullOrEmpty(userAgent))
             {
-                System.Diagnostics.Debug.WriteLine(e);
-                return new byte[] { 0 };
+                request.UserAgent = userAgent;
             }
-        }
-
-        public string GET(string url, string referer)
-        {
-            try
+            else
             {
-
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            request.UserAgent = ApiUrl.UserAgent;
-            request.ContentType = ApiUrl.ContentType;
-            request.Referer = referer;
-            request.Method = "get";
-
+                request.UserAgent = DefaultUserAgent;
+            }
+            if (timeout.HasValue)
+            {
+                request.Timeout = timeout.Value;
+            }
             if (mCookiesContainer == null)
             {
                 mCookiesContainer = new CookieContainer();
             }
-
             request.CookieContainer = mCookiesContainer;  //启用cookie
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            if (response.StatusCode== HttpStatusCode.NotFound)
-            {                
-                response = (HttpWebResponse)request.GetResponse();
-
-            }
-            //MessageBox.Show(response);
-            StreamReader sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8);
-            return sr.ReadToEnd();
-            }
-            catch (Exception e)
+            if (referer != null)
             {
-                System.Diagnostics.Debug.WriteLine(e);
-                return "";
+                request.Referer = referer;
             }
 
+            return request.GetResponse() as HttpWebResponse;
         }
-
-        public string GET_UTF8String(string url, string referer)
-        {
-            byte[] bytes = this.GETbyte(url, referer);
-            string utf8str = Encoding.UTF8.GetString(bytes);
-            return utf8str;
-        }
-
-
-
-
-
-
-        /// <summary>
-        /// 向服务器发送post请求 返回服务器回复数据
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="body"></param>
-        /// <returns></returns>
-        public byte[] POST(string url, string referer, string body)
+        public string GET(string url, string referer)
         {
             try
             {
-                byte[] request_body = Encoding.UTF8.GetBytes(body);
-                
+                HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, null, null);
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-                request.UserAgent = ApiUrl.UserAgent;
-                request.ContentType = ApiUrl.ContentType;
-                request.Referer = referer;
-                request.Method = "post";
-                request.ContentLength = request_body.Length;
-
-                Stream request_stream = request.GetRequestStream();
-
-                request_stream.Write(request_body, 0, request_body.Length);
-
-                if (mCookiesContainer == null)
+                Stream respStream = response.GetResponseStream();
+                // Dim reader As StreamReader = New StreamReader(respStream)
+                using (StreamReader reader = new StreamReader(respStream, Encoding.UTF8))
                 {
-                    mCookiesContainer = new CookieContainer();
+                    return reader.ReadToEnd();
                 }
-                request.CookieContainer = mCookiesContainer;  //启用cookie
-                
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-                Stream response_stream = response.GetResponseStream();
-
-                int count = (int)response.ContentLength;
-                int offset = 0;
-                byte[] buf = new byte[count];
-                while (count > 0)  //读取返回数据
-                {
-                    int n = response_stream.Read(buf, offset, count);
-                    if (n == 0) break;
-                    count -= n;
-                    offset += n;
-                }
-                return buf;
             }
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e);
-                return new byte[] { 0 };
             }
+            return "";
         }
 
-        public string POST_UTF8String(string url, string referer, string body)
+        public Image GetImage(string url, string referer)
         {
-            byte[] bytes = this.POST(url, referer, body);
-            string utf8str = Encoding.UTF8.GetString(bytes);
-            return utf8str;
+            try
+            {
+                HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, null, null);
+
+                Stream respStream = response.GetResponseStream();
+                return Image.FromStream(respStream);
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+            return null;
         }
+
+
+
+        /// <summary>  
+        /// 创建POST方式的HTTP请求  
+        /// </summary>  
+        /// <param name="url">请求的URL</param>  
+        /// <param name="parameters">随同请求POST的参数名称及参数值字典</param>  
+        /// <param name="timeout">请求的超时时间</param>  
+        /// <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
+        /// <param name="requestEncoding">发送HTTP请求时所用的编码</param>  
+        /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
+        /// <returns></returns>  
+        public HttpWebResponse CreatePostHttpResponse(string url, string referer, string contenttype,IDictionary<string, string> parameters, int? timeout, string userAgent, Encoding requestEncoding)
+        {
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new ArgumentNullException("url");
+            }
+            if (requestEncoding == null)
+            {
+                throw new ArgumentNullException("requestEncoding");
+            }
+            HttpWebRequest request = null;
+
+            request = WebRequest.Create(url) as HttpWebRequest;
+
+            request.Method = "POST";
+
+            if (!string.IsNullOrEmpty(userAgent))
+            {
+                request.UserAgent = userAgent;
+            }
+            else
+            {
+                request.UserAgent = DefaultUserAgent;
+            }
+            if (!string.IsNullOrEmpty(contenttype))
+            {
+                request.ContentType = contenttype;
+            }
+            else
+            {
+                request.ContentType = DefaultContentType;
+            }
+
+            
+            if (referer != null)
+            {
+                request.Referer = referer;
+            }
+
+            if (timeout.HasValue)
+            {
+                request.Timeout = timeout.Value;
+            }
+            if (mCookiesContainer == null)
+            {
+                mCookiesContainer = new CookieContainer();
+            }
+            request.CookieContainer = mCookiesContainer;  //启用cookie
+            //如果需要POST数据  
+
+            if (!(parameters == null || parameters.Count == 0))
+            {
+
+                StringBuilder buffer = new StringBuilder();
+                int i = 0;
+                foreach (string key in parameters.Keys)
+                {
+                    if (i > 0)
+                    {
+                        buffer.AppendFormat("&{0}={1}", key, parameters[key]);
+                    }
+                    else
+                    {
+                        if (contenttype == DefaultContentType)
+                        {
+
+                            buffer.AppendFormat("{0}={1}", key, parameters[key]);
+                        }
+                        else
+                        {
+                            buffer.AppendFormat("{0}", parameters[key]);
+                        }
+
+                    }
+                    i++;
+
+
+                }
+                byte[] data = requestEncoding.GetBytes(buffer.ToString());
+                using (Stream stream = request.GetRequestStream())
+                {
+                    stream.Write(data, 0, data.Length);
+                }
+            }
+            return request.GetResponse() as HttpWebResponse;
+        }
+
+
+
+        public string POST(string url, string referer, string contenttype, IDictionary<string, string> parameters)
+        {
+            try
+            {
+                HttpWebResponse response = (HttpWebResponse)CreatePostHttpResponse(url, referer, contenttype, parameters, null, null, Encoding.UTF8);
+
+                Stream respStream = response.GetResponseStream();
+                // Dim reader As StreamReader = New StreamReader(respStream)
+                using (StreamReader reader = new StreamReader(respStream, Encoding.UTF8))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.WriteLine(e);
+            }
+            return "";
+        }
+        /// <summary>
+        /// 列出cookie
+        /// </summary>
+        public string ListCookie()
+        {
+            List<Cookie> cookies = GetAllCookies(mCookiesContainer);
+            foreach (Cookie c in cookies)
+            {
+                System.Diagnostics.Debug.WriteLine(c);
+            }
+            return null;
+        }
+
+
 
         /// <summary>
         /// 获取指定cookie
@@ -208,16 +276,6 @@ namespace SmartQQLib.API.Http
             return lstCookies;
         }
 
-        public string UrlEncode(string str)
-        {
-            StringBuilder sb = new StringBuilder();
-            byte[] byStr = System.Text.Encoding.UTF8.GetBytes(str); //默认是System.Text.Encoding.Default.GetBytes(str)
-            for (int i = 0; i < byStr.Length; i++)
-            {
-                sb.Append(@"%" + Convert.ToString(byStr[i], 16));
-            }
 
-            return (sb.ToString());
-        }
     }
 }

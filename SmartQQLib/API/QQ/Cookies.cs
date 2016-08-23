@@ -8,11 +8,11 @@ namespace SmartQQLib.API
 {
     public class Cookies
     {
-        public static string ptwebqq { get; set; } = "";
-        public static string vfwebqq { get; set; } = "";
-        public static int uin { get; set; } = 0;
-        public static string psessionid { get; set; } = "";
-        public static int clientidt { get; set; } = 53999199;
-        public static string skey { get; set; } = "";
+        public string ptwebqq { get; set; } = "";
+        public string vfwebqq { get; set; } = "";
+        public int uin { get; set; } = 0;
+        public string psessionid { get; set; } = "";
+        public int clientidt { get; set; } = 53999199;
+        public string skey { get; set; } = "";
     }
 }

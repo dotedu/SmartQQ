@@ -44,11 +44,11 @@ namespace SmartQQ
             qc.OnLoginSucess = () => {
                 RunInMainthread(() => {
                     
-                    MessageBox.Show("ptwebqq="+SmartQQLib.API.Cookies.ptwebqq);
-                    MessageBox.Show("vfwebqq=" + SmartQQLib.API.Cookies.vfwebqq);
-                    MessageBox.Show("skey=" + SmartQQLib.API.Cookies.skey);
-                    MessageBox.Show("psessionid=" + SmartQQLib.API.Cookies.psessionid);
-                    MessageBox.Show("uin=" + SmartQQLib.API.Cookies.uin.ToString());
+                    MessageBox.Show("ptwebqq="+qc.LoginCookies.ptwebqq);
+                    MessageBox.Show("vfwebqq=" + qc.LoginCookies.vfwebqq);
+                    MessageBox.Show("skey=" + qc.LoginCookies.skey);
+                    MessageBox.Show("psessionid=" + qc.LoginCookies.psessionid);
+                    MessageBox.Show("uin=" + qc.LoginCookies.uin.ToString());
                 });
             };
 

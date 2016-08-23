@@ -8,8 +8,6 @@ namespace SmartQQLib.API
 {
     public class ApiUrl
     {
-        public static string UserAgent { get; set; } = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36";
-        public static string ContentType { get; set; } = "application/x-www-form-urlencoded";
         public static string Get_QrCode { get; set; } = "https://ssl.ptlogin2.qq.com/ptqrshow?appid=501004106&e=0&l=M&s=5&d=72&v=4&t=" + RandomNum.rd.Next().ToString();
         public static string[] Verify_QrCode { get; set; } = {
             "https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106 &u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10 &ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert &action=0-0-" + (RandomNum.rd.Next() * 900000 + 1000000).ToString() + "&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10143&login_sig=&pt_randsalt=0",

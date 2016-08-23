@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using RestSharp;
 using SmartQQLib.API.Http;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace SmartQQLib.API
 {
@@ -30,9 +28,7 @@ namespace SmartQQLib.API
         /// <returns></returns>
         public Image GetQRCodeImage()
         {
-            string url = ApiUrl.Get_QrCode;
-            var bytes = http.GETbyte(url, "");
-            return Image.FromStream(new MemoryStream(bytes));
+            return http.GetImage(ApiUrl.Get_QrCode, "");
 
         }
         /// <summary>
@@ -49,30 +45,19 @@ namespace SmartQQLib.API
             return result;
         }
 
-
-
-        public User GetCurrentQQ()
-        {
-
-            User user = new User();
-            user.qqNum = Convert.ToInt32((http.GetCookie("superuin").ToString()).Substring(2));
-            return user;
-        }
         /// <summary>
         /// 获得ptwebqq
         /// </summary>
         /// <param name="AuthRedirect"></param>
         /// <returns></returns>
-        public void GetPtwebqq(string redirect_uri)
+        public string GetPtwebqq(string redirect_uri)
         {
-            string rep = http.GET(redirect_uri, ApiUrl.Verify_QrCode[1]);
+            http.GET(redirect_uri, ApiUrl.Verify_QrCode[1]);
 
-            Cookies.ptwebqq = http.GetCookie("ptwebqq").ToString();
-            Debug.Write(Cookies.ptwebqq);
+            string ptwebqq  = http.GetCookie("ptwebqq").ToString();
 
-            Cookies.skey = http.GetCookie("skey").ToString();
-            Debug.Write(Cookies.skey);
-            //return http.GetCookie("ptwebqq").ToString();
+            return ptwebqq;
+
         }
 
         /// <summary>
@@ -90,37 +75,48 @@ namespace SmartQQLib.API
             return strVFwebqq;
         }
 
-        public void getUinAndPsessionid(string ptwebqq)
+        public List<object> getUinAndPsessionid(string ptwebqq)
         {
+            List<object> result = new List<object>();
 
-            //return strVFwebqq;
-            string Poststr = "r=%7B%22ptwebqq%22%3A%22" + ptwebqq + "%22%2C%22clientid%22%3A%2053999199%2C%20%22psessionid%22%3A%20%22%22%2C%22status%22%3A%20%22online%22%7D";
-            //MessageBox.Show(ptwebqq);
-            Debug.Write(Poststr);
+            string loginstr = "{\"ptwebqq\":\""+ ptwebqq + "\",\"clientid\": 53999199, \"psessionid\": \"\",\"status\": \"online\"}";
+            Debug.Write(loginstr);
 
-            var client = new RestClient(ApiUrl.Get_Uin_And_Psessionid[0]);
-            var request = new RestRequest(Method.POST);
-            request.AddHeader("content-type", "application/x-www-form-urlencoded");
-            request.AddHeader("postman-token", "6a4c961b-3572-4e8f-f8f6-6f8896b0a069");
-            request.AddHeader("cache-control", "no-cache");
-            request.AddHeader("referer", ApiUrl.Get_Uin_And_Psessionid[1]);
-            request.AddParameter("application/x-www-form-urlencoded", Poststr, ParameterType.RequestBody);
-            IRestResponse response = client.Execute(request);
-            var content = response.Content;
-            MessageBox.Show(content);
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("r", loginstr);
 
-            Debug.Write(content);
-            JObject JoGetDate = (JObject)JsonConvert.DeserializeObject(content);
-            Cookies.psessionid = JoGetDate["result"]["psessionid"].ToString();
-            Cookies.uin =Convert.ToInt32(JoGetDate["result"]["uin"]);
+            try
+            {
+                var content = http.POST(ApiUrl.Get_Uin_And_Psessionid[0], ApiUrl.Get_Uin_And_Psessionid[1], "", parameters);
+
+                Debug.Write(content);
+
+                JObject JoGetDate = (JObject)JsonConvert.DeserializeObject(content);
+
+
+                result[1] = JoGetDate["result"]["psessionid"].ToString();
+                Debug.Write(result[0]);
+                result[2] = Convert.ToInt32(JoGetDate["result"]["uin"]);
+                Debug.Write(result[1]);
+                result[0] = http.GetCookie("skey").ToString();
+                Debug.Write(result[2]);
+                return result;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
         }
 
 
         public Image GetUserLogo(int qqnum)
         {
             string url = "http://q1.qlogo.cn/g?b=qq&nk="+ qqnum+ "&s=5";
-            var bytes = http.GETbyte(url, "");
-            return Image.FromStream(new MemoryStream(bytes));
+            
+            return http.GetImage(url, "");
         }
 
     }

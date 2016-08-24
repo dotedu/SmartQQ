@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartQQLib.Tool;
+
 
 namespace SmartQQLib.API
 {
@@ -164,6 +166,9 @@ namespace SmartQQLib.API
             
             return http.GetImage(url, "");
         }
+
+
+
 
     }
 }

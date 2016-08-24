@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,25 +23,116 @@ namespace SmartQQLib
         }
         private SmartQQAPIService api = null;
 
-        public Cookies LoginCookies = new Cookies();
+
+        public static string cookiesFileName = "cookie.data";
+
 
         public bool IsLogin { get; private set; }
 
+        public LoginResult loingresult = new LoginResult();
 
+
+        public Cookies LoginCookies = ReadCookie();
 
         //callback
         public Action<Image> OnGetQRCodeImage;
         public Action OnScanImage;
         //public Action<Image> OnVerifyImage;
+
+        public Action BeginReLogin;
+        public Action ReLoginFail;
+
         public Action OnVerifyImage;
         public Action OnVerifySucess;
         public Action OnLoginSucess;
         public Action OnInitComplate;
 
 
+        internal static Cookies ReadCookie()
+        {
+            Cookies cookies;
+            if (File.Exists(Path.Combine(Environment.CurrentDirectory, cookiesFileName)))
+            {
+                System.Diagnostics.Debug.WriteLine("已读取cookie.data");
+                cookies = JsonConvert.DeserializeObject<Cookies>(
+                    File.ReadAllText(Path.Combine(Environment.CurrentDirectory, cookiesFileName)));
+            }
+            else
+            {
+
+                System.Diagnostics.Debug.WriteLine("读取cookie.data失败，重新创建");
+
+                cookies = new Cookies();
+                File.WriteAllText(Path.Combine(Environment.CurrentDirectory, cookiesFileName),
+                    JsonConvert.SerializeObject(cookies, Formatting.Indented));
+            }
+            return cookies;
+        }
+
         /// <summary>
         /// 运行QQClient主逻辑,推荐放在独立的线程中执行这个方法
         /// </summary>
+
+        // ----------0.利用cookie文件登录
+
+        public void ReLink()
+        {
+            BeginReLogin?.Invoke();
+            // Cookies CookieData = ReadCookie();
+            string ptwebqq = LoginCookies.ptwebqq;
+            string status = LoginCookies.status;
+            string skey = LoginCookies.skey;
+            string uin = LoginCookies.uin;
+            string p_skey = LoginCookies.p_skey;
+            string p_uin = LoginCookies.p_uin;
+
+            if (ptwebqq != "")
+            {
+                string ReLoginResult = api.ReLoginByCookie(ptwebqq, status, skey, uin, p_skey, p_uin);
+                if (ReLoginResult != null)
+                {
+                    JObject ReLogin = (JObject)JsonConvert.DeserializeObject(ReLoginResult);
+                    if (ReLogin["retcode"].ToString() == "0")
+                    {
+                        loingresult.psessionid = ReLogin["result"]["psessionid"].ToString();
+                        Debug.Write("psessionid=" + loingresult.psessionid);
+
+                        loingresult.uin = ReLogin["result"]["uin"].ToString();
+                        Debug.Write("uin=" + loingresult.uin);
+
+                        string[] namelist = { "skey", "uin", "p_skey", "p_uin" };
+
+                        List<string> CookieList = api.GetCookies(namelist);
+
+
+                        LoginCookies.skey = CookieList[0].ToString();
+                        Debug.Write("skey=" + LoginCookies.skey);
+
+                        LoginCookies.uin = CookieList[1].ToString();
+                        Debug.Write("uin=" + LoginCookies.uin);
+
+                        LoginCookies.p_skey = CookieList[2].ToString();
+                        Debug.Write("p_skey=" + LoginCookies.p_skey);
+
+                        LoginCookies.p_uin = CookieList[3].ToString();
+                        Debug.Write("p_uin=" + LoginCookies.p_uin);
+
+                        api.CookieProxy(LoginCookies.p_skey, LoginCookies.p_uin);
+                        IsLogin = true;
+                        OnLoginSucess?.Invoke();
+                    }
+                }
+            }
+
+            else
+            {
+                Debug.Write("从Cookie登录失败，请重新登录");
+                ReLoginFail?.Invoke();
+
+                Run();
+            }
+
+        }
 
         public void Run()
         {
@@ -52,19 +144,18 @@ namespace SmartQQLib
             // 5.获取psessionid和uin、skey
 
 
-            // ----------1.获取二维码
+            Debug.Write("清除Cookies.");
+            api.ClearCookies();
 
             do
             {
+                // ----------1.获取二维码
+
                 Debug.Write("[*] 正在生成二维码 ....");
                 var QRImg = api.GetQRCodeImage();
                 if (QRImg != null)
                 {
                     Debug.Write("成功\n");
-                }
-                else
-                {
-                    return;
                 }
 
                 Debug.Write("[*] 正在等待扫码 ....");
@@ -101,7 +192,7 @@ namespace SmartQQLib
                         OnScanImage?.Invoke();
 
                     }
-                    else if (authresult.Contains("二维码已失效")| authresult==null)
+                    else if (authresult.Contains("二维码已失效")|| authresult==null)
                     {
                         Debug.Write("[*] 重新生成二维码 ....");
                         var QRImgReGet = api.GetQRCodeImage();
@@ -114,8 +205,6 @@ namespace SmartQQLib
                     }
 
                 }
-
-
                 //----------2.获取vfwebqq
 
                 JObject Jovfwebqq = (JObject)JsonConvert.DeserializeObject(api.GetVfwebqq(LoginCookies.ptwebqq));
@@ -126,35 +215,45 @@ namespace SmartQQLib
                 Debug.Write("vfwebqq=" + LoginCookies.vfwebqq);
                 if (LoginCookies.vfwebqq == null)
                     return;
+                //----------登录
 
                 string LoginResult = api.getUinAndPsessionid(LoginCookies.ptwebqq);
-                if (LoginResult != null)
+                if (LoginResult != null&& LoginResult.Contains("psessionid"))
                 {
                     JObject JoUinAndPsessionid = (JObject)JsonConvert.DeserializeObject(LoginResult);
 
-                    LoginCookies.psessionid = JoUinAndPsessionid["result"]["psessionid"].ToString();
-                    Debug.Write("psessionid=" + LoginCookies.psessionid);
-                    LoginCookies.uin = JoUinAndPsessionid["result"]["uin"].ToString();
-                    Debug.Write("uin=" + LoginCookies.uin);
+                    loingresult.psessionid = JoUinAndPsessionid["result"]["psessionid"].ToString();
+                    Debug.Write("psessionid=" + loingresult.psessionid);
+                    loingresult.uin = JoUinAndPsessionid["result"]["uin"].ToString();
+                    Debug.Write("uin=" + loingresult.uin);
 
-                    string[] namelist ={ "skey","p_skey","p_uin"};
+                    string[] namelist = { "skey", "uin", "p_skey", "p_uin" };
 
                     List<string> CookieList = api.GetCookies(namelist);
 
 
                     LoginCookies.skey = CookieList[0].ToString();
                     Debug.Write("skey=" + LoginCookies.skey);
-                    LoginCookies.p_skey = CookieList[1].ToString();
+
+                    LoginCookies.uin = CookieList[1].ToString();
+                    Debug.Write("uin=" + LoginCookies.uin);
+
+                    LoginCookies.p_skey = CookieList[2].ToString();
                     Debug.Write("p_skey=" + LoginCookies.p_skey);
-                    LoginCookies.p_uin = CookieList[2].ToString();
+
+                    LoginCookies.p_uin = CookieList[3].ToString();
                     Debug.Write("p_uin=" + LoginCookies.p_uin);
+
+
+                    File.WriteAllText(Path.Combine(Environment.CurrentDirectory, cookiesFileName),
+                        JsonConvert.SerializeObject(LoginCookies, Formatting.Indented));
+
+                    Debug.Write("跨域共享cookie");
+                    //跨域共享cookie
+                    api.CookieProxy(LoginCookies.p_skey, LoginCookies.p_uin);
                     IsLogin = true;
                 }
-
             } while (!IsLogin);
-            Debug.Write("跨域共享cookie");
-            //跨域共享cookie
-            api.CookieProxy(LoginCookies.p_skey, LoginCookies.p_uin);
             OnLoginSucess?.Invoke();
 
         }

@@ -9,13 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartQQLib.Tool;
-
+using Newtonsoft.Json;
 
 namespace SmartQQLib.API
 {
     public class SmartQQAPIService
     {
         static HttpClient http;
+
         public SmartQQAPIService(HttpClient httpClient)
         {
             http = httpClient;
@@ -102,6 +103,11 @@ namespace SmartQQLib.API
 
         }
 
+
+        public void ClearCookies()
+        {
+            http.HttpHelp();
+        }
         public string getUinAndPsessionid(string ptwebqq)
         {
             List<string> result = new List<string>();
@@ -130,12 +136,62 @@ namespace SmartQQLib.API
 
         }
 
+        public string ReLoginByCookie(string ptwebqq, string status, string skey, string uin, string p_skey, string p_uin)
+        {
+            List<string> result = new List<string>();
+            http.AddCookie("ptwebqq", ptwebqq, "/", "qq.com");
+            http.AddCookie("skey", skey, "/", "qq.com");
+            http.AddCookie("uin", uin, "/", "qq.com");
+            http.AddCookie("p_skey", p_skey, "/", "web2.qq.com");
+            http.AddCookie("p_uin", p_uin, "/", "web2.qq.com");
+
+
+
+
+            string loginstr = "{\"ptwebqq\":\"" + ptwebqq + "\",\"clientid\": 53999199, \"psessionid\": \"\",\"status\": \""+ status + "\"}";
+            Debug.Write(loginstr);
+
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("r", loginstr);
+
+            try
+            {
+                Debug.Write("尝试重新登录");
+                var content = http.POST(ApiUrl.Get_Uin_And_Psessionid[0], ApiUrl.Get_Uin_And_Psessionid[1], "", parameters);
+
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+
+
+
         public void CookieProxy(string p_skey, string p_uin)
         {
             http.AddCookie("p_skey", p_skey, "/", "w.qq.com");
             http.AddCookie("p_uin", p_uin, "/", "w.qq.com");
-            
+            http.AddCookie("p_skey", p_skey, "/", "qun.qq.com");
+            http.AddCookie("p_uin", p_uin, "/", "qun.qq.com");
+
             http.ListCookie();
+        }
+
+        public void AddCookies(string ptwebqq, string skey)
+        {
+            http.AddCookie("ptwebqq", ptwebqq, "/", "qq.com");
+            http.AddCookie("skey", skey, "/", "qq.com");
+
         }
 
         public List<string> GetCookies(string[] namelist)
@@ -158,7 +214,6 @@ namespace SmartQQLib.API
             return null;
 
         }
-
 
         public Image GetUserLogo(int qqnum)
         {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,19 @@ namespace SmartQQ
         private void LoginForm_Load(object sender, EventArgs e)
         {
             qc = new SmartQQClient();
+
+            qc.BeginReLogin = () => {
+                RunInMainthread(() => {
+                    //QrCodePicture.Image = UserLogo;
+                    LoginLabel.Text = "自动登录中";
+                });
+            };
+            qc.ReLoginFail = () => {
+                RunInMainthread(() => {
+                    //QrCodePicture.Image = UserLogo;
+                    LoginLabel.Text = "自动登录失败，正在获取二维码";
+                });
+            };
 
             qc.OnGetQRCodeImage = (image) => {
                 RunInMainthread(() => {
@@ -43,18 +57,27 @@ namespace SmartQQ
 
             qc.OnLoginSucess = () => {
                 RunInMainthread(() => {
-                    
+                    LoginLabel.Text = "登录成功";
+
                     MessageBox.Show("ptwebqq="+qc.LoginCookies.ptwebqq);
                     MessageBox.Show("vfwebqq=" + qc.LoginCookies.vfwebqq);
                     MessageBox.Show("skey=" + qc.LoginCookies.skey);
-                    MessageBox.Show("psessionid=" + qc.LoginCookies.psessionid);
+                    MessageBox.Show("psessionid=" + qc.loingresult.psessionid);
                     MessageBox.Show("uin=" + qc.LoginCookies.uin.ToString());
                 });
             };
 
 
             RunAsync(() => {
-                qc.Run();
+                if (File.Exists(Application.StartupPath + "\\cookie.data"))
+                {
+                    qc.ReLink();
+
+                }
+                else
+                {
+                    qc.Run();
+                }
             });
 
             //MessageBox.Show(SmartQQLib.API.Cookies.ptwebqq);

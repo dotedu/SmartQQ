@@ -48,11 +48,12 @@
   <ItemGroup>
     <Compile Include="API\Http\ApiUrl.cs" />
     <Compile Include="API\Http\HttpClient.cs" />
-    <Compile Include="API\QQ\Friends.cs" />
-    <Compile Include="API\QQ\Cookies.cs" />
+    <Compile Include="API\QQ\FriendList.cs" />
+    <Compile Include="API\QQ\GroupList.cs" />
+    <Compile Include="API\QQ\GroupMembers.cs" />
+    <Compile Include="API\Result\Cookies.cs" />
     <Compile Include="API\QQ\User.cs" />
-    <Compile Include="API\Result\AuthRedirectResult.cs" />
-    <Compile Include="API\Result\AuthResult.cs" />
+    <Compile Include="API\Result\LoginResult.cs" />
     <Compile Include="API\SmartQQAPIService.cs" />
     <Compile Include="SmartQQClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

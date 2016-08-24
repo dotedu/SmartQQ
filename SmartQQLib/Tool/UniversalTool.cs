@@ -12,7 +12,6 @@ namespace SmartQQLib.Tool
         public static Random rd = new Random();
 
 
-
         public String hash(long x, String K)
         {
             int[] N = { 0, 0, 0, 0 };
@@ -50,6 +49,16 @@ namespace SmartQQLib.Tool
             }
 
             return V1;
+        }
+
+        public int GetBkn(String e)
+        {
+            char[] E = e.ToCharArray();
+            int hash = 5381;
+            for (int i = 0, len = e.Length; i < len; ++i)
+                hash += (hash << 5) + E[i];
+            int t = 2147483647 & hash;
+            return t;
         }
     }
 }

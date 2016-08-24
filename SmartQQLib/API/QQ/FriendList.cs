@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartQQLib.API
 {
-    public class Friends
+    class FriendList
     {
         public int retcode { get; set; }
         public Result result { get; set; }
@@ -43,7 +43,7 @@ namespace SmartQQLib.API
         public string nick { get; set; }
         public object uin { get; set; }
     }
-    public class Result1
+    public class FriendList_Result
     {
         public IList<Friend> friends { get; set; }
         public IList<Markname> marknames { get; set; }
@@ -51,4 +51,5 @@ namespace SmartQQLib.API
         public IList<Vipinfo> vipinfo { get; set; }
         public IList<Info> info { get; set; }
     }
+
 }

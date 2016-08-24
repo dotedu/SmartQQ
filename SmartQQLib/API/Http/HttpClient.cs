@@ -21,8 +21,18 @@ namespace SmartQQLib.API.Http
         /// <summary>
         /// 访问服务器时的cookies
         /// </summary>
-        private CookieContainer mCookiesContainer;
+        //private CookieContainer mCookiesContainer;
 
+        //private CookieCollection mCookieCollection;
+        private CookieContainer mCookiesContainer { get; set; }
+
+        private CookieCollection mCookieCollection { get; set; }
+
+        public void HttpHelp()
+        {
+            this.mCookieCollection = new CookieCollection();
+            this.mCookiesContainer = new CookieContainer();
+        }
         /// <summary>
         /// 默认UserAgent
         /// </summary>
@@ -36,7 +46,7 @@ namespace SmartQQLib.API.Http
         /// <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
         /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
         /// <returns></returns>  
-        public HttpWebResponse CreateGetHttpResponse(string url, string referer, int? timeout, string userAgent)
+        public HttpWebResponse CreateGetHttpResponse(string url, string referer, int? timeout, string userAgent )
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -73,7 +83,7 @@ namespace SmartQQLib.API.Http
             try
             {
                 HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, null, null);
-
+                this.mCookieCollection = response.Cookies;
                 Stream respStream = response.GetResponseStream();
                 // Dim reader As StreamReader = New StreamReader(respStream)
                 using (StreamReader reader = new StreamReader(respStream, Encoding.UTF8))
@@ -93,6 +103,7 @@ namespace SmartQQLib.API.Http
             try
             {
                 HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, null, null);
+                this.mCookieCollection = response.Cookies;
 
                 Stream respStream = response.GetResponseStream();
                 return Image.FromStream(respStream);
@@ -179,7 +190,7 @@ namespace SmartQQLib.API.Http
                     }
                     else
                     {
-                        if (contenttype == DefaultContentType| string.IsNullOrEmpty(contenttype))
+                        if (contenttype == DefaultContentType || string.IsNullOrEmpty(contenttype))
                         {
 
                             buffer.AppendFormat("{0}={1}", key, parameters[key]);
@@ -191,8 +202,6 @@ namespace SmartQQLib.API.Http
 
                     }
                     i++;
-
-
                 }
                 byte[] data = requestEncoding.GetBytes(buffer.ToString());
                 using (Stream stream = request.GetRequestStream())
@@ -200,6 +209,7 @@ namespace SmartQQLib.API.Http
                     stream.Write(data, 0, data.Length);
                 }
             }
+
             return request.GetResponse() as HttpWebResponse;
         }
 
@@ -210,6 +220,8 @@ namespace SmartQQLib.API.Http
             try
             {
                 HttpWebResponse response = (HttpWebResponse)CreatePostHttpResponse(url, referer, contenttype, parameters, null, null, Encoding.UTF8);
+
+                this.mCookieCollection = response.Cookies;
 
                 Stream respStream = response.GetResponseStream();
                 // Dim reader As StreamReader = New StreamReader(respStream)
@@ -232,8 +244,8 @@ namespace SmartQQLib.API.Http
             List<Cookie> cookies = GetAllCookies(mCookiesContainer);
             foreach (Cookie c in cookies)
             {
-                System.Diagnostics.Debug.Write("显示cookie");
-                System.Diagnostics.Debug.WriteLine(c.Name + "-" + c.Value + "-" + c.Path + "-" + c.Domain);
+                //System.Diagnostics.Debug.Write("显示cookie");
+                //System.Diagnostics.Debug.WriteLine(c.Name + "-" + c.Value + "-" + c.Path + "-" + c.Domain);
             }
             return null;
         }
@@ -252,12 +264,13 @@ namespace SmartQQLib.API.Http
             {
                 if (c.Name == name)
                 {
+                    System.Diagnostics.Debug.Write(c.ToString());
                     return (c.ToString()).Remove(0, name.Length + 1);
                 }
             }
             return null;
         }
-
+        
         private static List<Cookie> GetAllCookies(CookieContainer cc)
         {
             List<Cookie> lstCookies = new List<Cookie>();
@@ -274,6 +287,17 @@ namespace SmartQQLib.API.Http
                 foreach (CookieCollection colCookies in lstCookieCol.Values)
                     foreach (Cookie c in colCookies) lstCookies.Add(c);
             }
+
+            StringBuilder sbc = new StringBuilder();
+            foreach (Cookie cookie in lstCookies)
+            {
+                sbc.AppendFormat("Set-Cookie3: {0}={1}; path=\"{2}\"; domain=\"{3}\"; \"{4}\"; version={5}\r\n",
+                    cookie.Name, cookie.Value, cookie.Path, cookie.Domain, cookie.Port,
+                    cookie.Version.ToString());
+            }
+            //System.Diagnostics.Debug.Write("写入COOKIE文件");
+
+            //File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "cookies.txt"),sbc.ToString(), System.Text.Encoding.Default);
             return lstCookies;
         }
 

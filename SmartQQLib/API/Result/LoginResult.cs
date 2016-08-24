@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace SmartQQLib.API
 {
-    public class AuthRedirectResult
+    public class LoginResult
     {
-        public string ptwebqq;
+        public string uin { get; set; } = "";
+        public string psessionid { get; set; } = "";
 
     }
 }

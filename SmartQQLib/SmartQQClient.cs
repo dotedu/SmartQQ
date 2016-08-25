@@ -267,9 +267,9 @@ namespace SmartQQLib
                     Debug.Write("p_uin=" + LoginCookies.p_uin);
 
 
-                    if (!Directory.Exists("\\user\\" + LoginResult.qq))
+                    if (!Directory.Exists(Environment.CurrentDirectory + "\\user\\" + LoginResult.qq))
                     {
-                        Directory.CreateDirectory("\\user\\" + LoginResult.qq);
+                        Directory.CreateDirectory(Environment.CurrentDirectory + "\\user\\" + LoginResult.qq);
                     }
 
                     File.WriteAllText(Path.Combine(Environment.CurrentDirectory + "\\user\\" + LoginResult.qq, cookiesFileName), JsonConvert.SerializeObject(LoginCookies, Formatting.Indented));

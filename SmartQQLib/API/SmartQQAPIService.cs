@@ -375,7 +375,7 @@ namespace SmartQQLib.API
 
         }
 
-    
+
         //----------------------发送消息--------
 
 
@@ -384,7 +384,39 @@ namespace SmartQQLib.API
 
 
 
+        internal string get_user_friends(long qq, string ptwebqq, string vfwebqq)
+        {
+            string url = "http://s.web2.qq.com/api/get_user_friends2";
 
+
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+
+
+            string PostJson = "{{ \"hash\":\"{0}\",\"vfwebqq\":\"{1}\"}}";
+            PostJson = string.Format(PostJson, tool.hash(qq, ptwebqq), vfwebqq);
+
+
+            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            postdata.Add("r", PostJson);
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
 
         /// <summary>
         /// 获取QQ头像

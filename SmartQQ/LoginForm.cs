@@ -59,11 +59,11 @@ namespace SmartQQ
                 RunInMainthread(() => {
                     LoginLabel.Text = "登录成功";
 
-                    MessageBox.Show("ptwebqq="+qc.LoginCookies.ptwebqq);
-                    MessageBox.Show("vfwebqq=" + qc.LoginCookies.vfwebqq);
-                    MessageBox.Show("skey=" + qc.LoginCookies.skey);
-                    MessageBox.Show("psessionid=" + qc.loingresult.psessionid);
-                    MessageBox.Show("uin=" + qc.LoginCookies.uin.ToString());
+                    //MessageBox.Show("ptwebqq="+qc.LoginCookies.ptwebqq);
+                    //MessageBox.Show("vfwebqq=" + qc.LoginCookies.vfwebqq);
+                    //MessageBox.Show("skey=" + qc.LoginCookies.skey);
+                    //MessageBox.Show("psessionid=" + qc.loingresult.psessionid);
+                    //MessageBox.Show("uin=" + qc.LoginCookies.uin.ToString());
                 });
             };
 

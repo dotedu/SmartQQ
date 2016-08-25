@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows.Forms;
 
 
@@ -15,20 +16,34 @@ namespace SmartQQLib.API.Http
 
 
 
-    public class HttpClient
+    internal class HttpClient
     {
+        public string UrlEncode(string str)
+        {
+            StringBuilder builder = new StringBuilder();
+            foreach (char c in str)
+            {
+                if (HttpUtility.UrlEncode(c.ToString()).Length > 1)
+                {
+                    builder.Append(HttpUtility.UrlEncode(c.ToString()).ToUpper());
+                }
+                else
+                {
+                    builder.Append(c);
+                }
+            }
+            return builder.ToString();
+        }
+
 
         /// <summary>
         /// 访问服务器时的cookies
         /// </summary>
-        //private CookieContainer mCookiesContainer;
-
-        //private CookieCollection mCookieCollection;
         private CookieContainer mCookiesContainer { get; set; }
 
         private CookieCollection mCookieCollection { get; set; }
 
-        public void HttpHelp()
+        internal void HttpHelp()
         {
             this.mCookieCollection = new CookieCollection();
             this.mCookiesContainer = new CookieContainer();
@@ -46,12 +61,35 @@ namespace SmartQQLib.API.Http
         /// <param name="userAgent">请求的客户端浏览器信息，可以为空</param>  
         /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
         /// <returns></returns>  
-        public HttpWebResponse CreateGetHttpResponse(string url, string referer, int? timeout, string userAgent )
+        internal HttpWebResponse CreateGetHttpResponse(string url, string referer, IDictionary<string, object> parameters, int? timeout, string userAgent )
         {
+
+
             if (string.IsNullOrEmpty(url))
             {
                 throw new ArgumentNullException("url");
             }
+
+            if (!(parameters == null || parameters.Count == 0))
+            {
+
+                StringBuilder buffer = new StringBuilder();
+                int i = 0;
+                foreach (string key in parameters.Keys)
+                {
+                    if (i > 0)
+                    {
+                        buffer.AppendFormat("&{0}={1}", key, UrlEncode(parameters[key].ToString()));
+                    }
+                    else
+                    {
+                        buffer.AppendFormat("?{0}={1}", key, UrlEncode(parameters[key].ToString()));
+                    }
+                    i++;
+                }
+                url= String.Concat(url, buffer.ToString());
+            }
+
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
             request.Method = "GET";
             if (!string.IsNullOrEmpty(userAgent))
@@ -78,11 +116,11 @@ namespace SmartQQLib.API.Http
 
             return request.GetResponse() as HttpWebResponse;
         }
-        public string GET(string url, string referer)
+        internal string GET(string url, string referer, IDictionary<string, object> parameters)
         {
             try
             {
-                HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, null, null);
+                HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, parameters, null, null);
                 this.mCookieCollection = response.Cookies;
                 Stream respStream = response.GetResponseStream();
                 // Dim reader As StreamReader = New StreamReader(respStream)
@@ -98,11 +136,11 @@ namespace SmartQQLib.API.Http
             return "";
         }
 
-        public Image GetImage(string url, string referer)
+        internal Image GetImage(string url, string referer, IDictionary<string, object> parameters)
         {
             try
             {
-                HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, null, null);
+                HttpWebResponse response = (HttpWebResponse)CreateGetHttpResponse(url, referer, parameters, null, null);
                 this.mCookieCollection = response.Cookies;
 
                 Stream respStream = response.GetResponseStream();
@@ -127,7 +165,7 @@ namespace SmartQQLib.API.Http
         /// <param name="requestEncoding">发送HTTP请求时所用的编码</param>  
         /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
         /// <returns></returns>  
-        public HttpWebResponse CreatePostHttpResponse(string url, string referer, string contenttype,IDictionary<string, string> parameters, int? timeout, string userAgent, Encoding requestEncoding)
+        internal HttpWebResponse CreatePostHttpResponse(string url, string referer, string contenttype,IDictionary<string, string> parameters, int? timeout, string userAgent, Encoding requestEncoding)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -215,7 +253,7 @@ namespace SmartQQLib.API.Http
 
 
 
-        public string POST(string url, string referer, string contenttype, IDictionary<string, string> parameters)
+        internal string POST(string url, string referer, string contenttype, IDictionary<string, string> parameters)
         {
             try
             {
@@ -239,7 +277,7 @@ namespace SmartQQLib.API.Http
         /// <summary>
         /// 列出cookie
         /// </summary>
-        public string ListCookie()
+        internal string ListCookie()
         {
             List<Cookie> cookies = GetAllCookies(mCookiesContainer);
             foreach (Cookie c in cookies)
@@ -257,7 +295,7 @@ namespace SmartQQLib.API.Http
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public string GetCookie(string name)
+        internal string GetCookie(string name)
         {
             List<Cookie> cookies = GetAllCookies(mCookiesContainer);
             foreach (Cookie c in cookies)
@@ -301,7 +339,7 @@ namespace SmartQQLib.API.Http
             return lstCookies;
         }
 
-        public void AddCookie(string name , string value,string path,string domain)
+        internal void AddCookie(string name , string value,string path,string domain)
         {
 
             Cookie cookie = new Cookie(name, value, path, domain);
@@ -311,6 +349,35 @@ namespace SmartQQLib.API.Http
             }
 
             mCookiesContainer.Add(cookie);
+
+        }
+
+
+        /// <summary>
+        /// 添加URL参数
+        /// </summary>
+        public string AddParam(string url, IDictionary<string, object> parameters)
+        {
+            if (!(parameters == null || parameters.Count == 0))
+            {
+
+                StringBuilder buffer = new StringBuilder();
+                int i = 0;
+                foreach (string key in parameters.Keys)
+                {
+                    if (i > 0)
+                    {
+                        buffer.AppendFormat("&{0}={1}", key, UrlEncode(parameters[key].ToString()));
+                    }
+                    else
+                    {
+                        buffer.AppendFormat("?{0}={1}", key, UrlEncode(parameters[key].ToString()));
+                    }
+                    i++;
+                }
+                return String.Concat(url, buffer.ToString());
+            }
+            return url;
 
         }
     }

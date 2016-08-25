@@ -32,7 +32,7 @@ namespace SmartQQLib
         public LoginResult loingresult = new LoginResult();
 
 
-        public Cookies LoginCookies = ReadCookie();
+        internal Cookies LoginCookies = ReadCookie();
 
         //callback
         public Action<Image> OnGetQRCodeImage;

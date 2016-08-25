@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SmartQQLib.Tool
 {
-    public class UniversalTool
+    internal class UniversalTool
     {
-
-        public static Random rd = new Random();
-
-
-        public String hash(long x, String K)
+        /// <summary>  
+        /// 获取时间戳  
+        /// </summary> 
+        internal Int64 GetTimeStamp()
+        {
+            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return Convert.ToInt64(ts.TotalSeconds);
+        }
+        /// <summary>  
+        /// 取得hash值 
+        /// </summary> 
+        internal String hash(long x, String K)
         {
             int[] N = { 0, 0, 0, 0 };
             char[] k = K.ToCharArray();
@@ -51,7 +59,11 @@ namespace SmartQQLib.Tool
             return V1;
         }
 
-        public int GetBkn(String e)
+
+        /// <summary>  
+        /// 取得bkn值 
+        /// </summary> 
+        internal int GetBkn(String e)
         {
             char[] E = e.ToCharArray();
             int hash = 5381;
@@ -59,6 +71,32 @@ namespace SmartQQLib.Tool
                 hash += (hash << 5) + E[i];
             int t = 2147483647 & hash;
             return t;
+        }
+
+        /// <summary>
+        /// 获取目录文件夹下的所有子目录
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <param name="filePattern"></param>
+        /// <returns></returns>
+        public static List<string> FindSubDirectories(string directory)
+        {
+            return Directory.GetDirectories(directory, "*", SearchOption.AllDirectories).ToList<string>();
+        }
+
+
+        /// <summary>
+        /// 获取目录名称
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <returns></returns>
+        public static string GetDirectoryName(string directory)
+        {
+            if (!Directory.Exists(directory))
+            {
+                return string.Empty;// DirectoryHelper.CreateDirectory(directory);
+            }
+            return new DirectoryInfo(directory).Name;
         }
     }
 }

@@ -8,8 +8,12 @@ namespace SmartQQLib.API
 {
     public class LoginResult
     {
-        public string uin { get; set; } = "";
-        public string psessionid { get; set; } = "";
+        public static string qq { get; set; } = "";
+        public static string psessionid { get; set; } = "";
+        public static string ptwebqq { get; set; } = "";
+        public static string skey { get; set; } = "";
+
+        public static string vfwebqq { get; set; } = "";
 
     }
 }

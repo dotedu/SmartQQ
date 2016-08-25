@@ -8,7 +8,8 @@ namespace SmartQQLib
 {
     internal class Base
     {
-        public static int clientid { get; set; } = 53999199;
+        public static long clientid { get; set; } = 53999199;
+        public static string status { get; set; } = "online";   //callme|online|away|busy|silent|hidden|offline,
         public static string psessionid { get; set; } = "";
         public static string vfwebqq { get; set; } = "";
         public static string ptwebqq { get; set; } = "";

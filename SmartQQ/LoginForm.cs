@@ -69,14 +69,15 @@ namespace SmartQQ
 
 
             RunAsync(() => {
-                if (File.Exists(Application.StartupPath + "\\cookie.data"))
+                if (File.Exists(Application.StartupPath + "\\user\\user.ini"))
                 {
                     qc.ReLink();
 
                 }
                 else
                 {
-                    qc.Run();
+                    qc.Login();
+                    
                 }
             });
 

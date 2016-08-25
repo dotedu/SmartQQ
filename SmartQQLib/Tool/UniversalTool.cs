@@ -5,18 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartQQLib.Tool
+namespace SmartQQLib.API.Tool
 {
     internal class UniversalTool
     {
-        /// <summary>  
-        /// 获取时间戳  
-        /// </summary> 
-        internal Int64 GetTimeStamp()
+        /// <summary>
+        /// 获取1970-01-01至dateTime的毫秒数
+        /// </summary>
+        internal long GetTimeStamp(DateTime dateTime)
         {
-            TimeSpan ts = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0);
-            return Convert.ToInt64(ts.TotalSeconds);
+            DateTime dt1970 = new DateTime(1970, 1, 1, 0, 0, 0, 0);
+            return (dateTime.Ticks - dt1970.Ticks) / 10000;
         }
+
+
         /// <summary>  
         /// 取得hash值 
         /// </summary> 

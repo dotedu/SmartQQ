@@ -6,22 +6,16 @@ using System.Threading.Tasks;
 
 namespace SmartQQLib.API
 {
-    public class User
-    {
-        public int retcode { get; set; } = 0;
-        public Result result { get; set; }
-    }
 
-
-    public class Birthday
+    public class UserBirthday
     {
         public int month { get; set; }
         public int year { get; set; }
         public int day { get; set; }
     }
-    public class Result
+    public class UserResult
     {
-        public Birthday birthday { get; set; }
+        public UserBirthday birthday { get; set; }
         public int face { get; set; }
         public string phone { get; set; }
         public string occupation { get; set; }

@@ -79,15 +79,16 @@ namespace SmartQQLib.API.Http
                 {
                     if (i > 0)
                     {
-                        buffer.AppendFormat("&{0}={1}", key, UrlEncode(parameters[key].ToString()));
+                        buffer.AppendFormat("&{0}={1}", key, parameters[key]);
                     }
                     else
                     {
-                        buffer.AppendFormat("?{0}={1}", key, UrlEncode(parameters[key].ToString()));
+                        buffer.AppendFormat("?{0}={1}", key, parameters[key]);
                     }
                     i++;
                 }
                 url= String.Concat(url, buffer.ToString());
+                System.Diagnostics.Debug.Write(url);
             }
 
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
@@ -335,7 +336,7 @@ namespace SmartQQLib.API.Http
             }
             //System.Diagnostics.Debug.Write("写入COOKIE文件");
 
-            //File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "cookies.txt"),sbc.ToString(), System.Text.Encoding.Default);
+            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "cookies.txt"),sbc.ToString(), System.Text.Encoding.Default);
             return lstCookies;
         }
 
@@ -380,5 +381,7 @@ namespace SmartQQLib.API.Http
             return url;
 
         }
+
+
     }
 }

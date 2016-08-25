@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartQQLib.Tool;
+using SmartQQLib.API.Tool;
 using Newtonsoft.Json;
 
 namespace SmartQQLib.API
@@ -20,17 +20,11 @@ namespace SmartQQLib.API
         {
             http = httpClient;
 
-        }
+    }
 
-        private static UniversalTool tool;
+        private static UniversalTool tool = new UniversalTool();
 
-        internal SmartQQAPIService(UniversalTool universalTool)
-        {
-            tool = universalTool;
-
-        }
-
-        private static Int64 TimeStampGetQR;
+        internal long TimeStampGetQR;
 
         public static Random rd = new Random();
         double Random_DT = rd.NextDouble();
@@ -54,8 +48,7 @@ namespace SmartQQLib.API
             getParam.Add("d", 72);
             getParam.Add("v", 4);
             getParam.Add("t", Random_DT);
-
-            TimeStampGetQR = tool.GetTimeStamp();
+            TimeStampGetQR = tool.GetTimeStamp(DateTime.Now);
 
             return http.GetImage(url, null, getParam);
            
@@ -71,10 +64,9 @@ namespace SmartQQLib.API
         {
             string query_string_ul = "http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10";
 
-            object query_string_action = tool.GetTimeStamp() - TimeStampGetQR;
+            object query_string_action = "0 - 0 -"+ (tool.GetTimeStamp(DateTime.Now) - TimeStampGetQR);
 
             string url = "https://ssl.ptlogin2.qq.com/ptqrlogin";
-            url = string.Format(url, tool.GetTimeStamp()- TimeStampGetQR);
 
             IDictionary<string, object> getParam = new Dictionary<string, object>();
 
@@ -99,7 +91,7 @@ namespace SmartQQLib.API
             getParam.Add("js_ver", Base.g_pt_version);
             getParam.Add("login_sig", "");
             getParam.Add("pt_randsalt", Base.isRandSalt);
-            Debug.Write(url);
+            //Debug.Write(url);
 
             string referer = "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1 &s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert &strong_login=1&login_state=10&t=20131024001";
 
@@ -120,16 +112,12 @@ namespace SmartQQLib.API
         {
             string url = redirect_url;
 
-            string referer = ApiUrl.Get_PTwebqq[1];
-
-            IDictionary<string, object> getParam = new Dictionary<string, object>();
-
-            getParam.Add("appid", 501004106);
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
 
 
             try
             {
-                http.GET(url, referer, getParam);
+                http.GET(url, referer, null);
 
                 string result = http.GetCookie("ptwebqq").ToString();
                 Debug.Write(result);
@@ -154,14 +142,17 @@ namespace SmartQQLib.API
         /// <returns></returns>
         internal string GetVfwebqq(string ptwebqq)
         {
-            string url = ApiUrl.Get_VFwebqq[0];
-            url = string.Format(url, ptwebqq, Random_DT);
+            string url = "http://s.web2.qq.com/api/getvfwebqq";
+            
 
-            string referer = ApiUrl.Get_VFwebqq[1];
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
 
             IDictionary<string, object> getParam = new Dictionary<string, object>();
 
-            getParam.Add("appid", 501004106);
+            getParam.Add("ptwebqq", ptwebqq);
+            getParam.Add("clientid",Base.clientid);
+            getParam.Add("psessionid", "");
+            getParam.Add("t", tool.GetTimeStamp(DateTime.Now));
 
 
             try
@@ -181,25 +172,32 @@ namespace SmartQQLib.API
             return null;
 
         }
-
-
-        internal void ClearCookies()
-        {
-            http.HttpHelp();
-        }
+        /// <summary>
+        /// 获取UIN和Psessionid
+        /// </summary>
+        /// <param name="ptwebqq"></param>
+        /// <returns></returns>
         internal string getUinAndPsessionid(string ptwebqq)
         {
-            List<string> result = new List<string>();
 
-            string loginstr = "{\"ptwebqq\":\""+ ptwebqq + "\",\"clientid\": "+ Base.clientid+ ", \"psessionid\": \"\",\"status\": \"online\"}";
-            Debug.Write(loginstr);
+            string url = "http://d1.web2.qq.com/channel/login2";
+
+
+            string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
+
+
+
+            string PostJson = "{{\"ptwebqq\":\"{0}\",\"clientid\":{1}, \"psessionid\": \"\",\"status\": \"{2}\"}}";
+            PostJson = string.Format(PostJson, ptwebqq, Base.clientid, Base.status);
+
+            Debug.Write(PostJson);
 
             IDictionary<string, string> postdata = new Dictionary<string, string>();
-            postdata.Add("r", loginstr);
+            postdata.Add("r", PostJson);
 
             try
             {
-                var content = http.POST(ApiUrl.Get_Uin_And_Psessionid[0], ApiUrl.Get_Uin_And_Psessionid[1], "", postdata);
+                var content = http.POST(url, referer, "", postdata);
                 http.ListCookie();
                 Debug.Write("显示返回内容");
                 Debug.Write(content);
@@ -214,10 +212,20 @@ namespace SmartQQLib.API
             return null;
 
         }
-
+ 
+        
+        /// <summary>
+        /// 从cookie文件登录
+        /// </summary>
+        /// <param name="ptwebqq"></param>
+        /// <param name="status"></param>
+        /// <param name="skey"></param>
+        /// <param name="uin"></param>
+        /// <param name="p_skey"></param>
+        /// <param name="p_uin"></param>
+        /// <returns></returns>
         internal string ReLoginByCookie(string ptwebqq, string status, string skey, string uin, string p_skey, string p_uin)
         {
-            List<string> result = new List<string>();
             http.AddCookie("ptwebqq", ptwebqq, "/", "qq.com");
             http.AddCookie("skey", skey, "/", "qq.com");
             http.AddCookie("uin", uin, "/", "qq.com");
@@ -225,18 +233,28 @@ namespace SmartQQLib.API
             http.AddCookie("p_uin", p_uin, "/", "web2.qq.com");
 
 
+            string url = "http://d1.web2.qq.com/channel/login2";
 
 
-            string loginstr = "{\"ptwebqq\":\"" + ptwebqq + "\",\"clientid\": 53999199, \"psessionid\": \"\",\"status\": \""+ status + "\"}";
-            Debug.Write(loginstr);
+            string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
+
+
+
+
+
+
+            string PostJson = "{{\"ptwebqq\":\"{0}\",\"clientid\":{1}, \"psessionid\": \"\",\"status\": \"{2}\"}}";
+            PostJson = string.Format(PostJson, ptwebqq, Base.clientid, status);
+
+            Debug.Write(PostJson);
 
             IDictionary<string, string> postdata = new Dictionary<string, string>();
-            postdata.Add("r", loginstr);
+            postdata.Add("r", PostJson);
 
             try
             {
                 Debug.Write("尝试重新登录");
-                var content = http.POST(ApiUrl.Get_Uin_And_Psessionid[0], ApiUrl.Get_Uin_And_Psessionid[1], "", postdata);
+                var content = http.POST(url, referer, "", postdata);
 
                 http.ListCookie();
                 Debug.Write("显示返回内容");
@@ -254,8 +272,154 @@ namespace SmartQQLib.API
 
         }
 
+        /// <summary>
+        /// 修改登录状态
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="psessionid"></param>
+        internal void Change_State(string state, string psessionid)
+        {
+            string url = "http://s.web2.qq.com/api/get_self_info2";
 
 
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+
+            getParam.Add("newstatus", state);
+            getParam.Add("clientid", Base.clientid);
+            getParam.Add("psessionid", psessionid);
+            getParam.Add("t", Random_DT);
+
+            try
+            {
+                string result = http.GET(url, referer, getParam);
+
+
+                http.ListCookie();
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+        }
+
+        /// <summary>
+        /// 获取本人信息
+        /// </summary>
+        /// <returns></returns>
+        internal string GetUserInfo()
+        {
+            string url = "http://s.web2.qq.com/api/get_self_info2";
+
+
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+            try
+            {
+                string result = http.GET(url, referer, null);
+
+
+                http.ListCookie();
+                return result;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 接收消息
+        /// </summary>
+        /// <param name="ptwebqq"></param>
+        /// <param name="psessionid"></param>
+        /// <returns></returns>
+        internal string recv_message(string ptwebqq, string psessionid)
+        {
+            string url = "http://d1.web2.qq.com/channel/poll2";
+
+
+            string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
+
+
+            
+            string PostJson = "{{ \"ptwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"{2}\",\"key\":\"\"}}";
+            PostJson = string.Format(PostJson, ptwebqq, Base.clientid, psessionid);
+
+            Debug.Write(PostJson);
+
+            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            postdata.Add("r", PostJson);
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+
+    
+        //----------------------发送消息--------
+
+
+
+        //--------   ----待添加-------------------
+
+
+
+
+
+        /// <summary>
+        /// 获取QQ头像
+        /// </summary>
+        /// <param name="qqnum"></param>
+        /// <returns></returns>
+        public Image GetUserLogo(int qqnum)
+        {
+            string url = "http://q1.qlogo.cn/g";
+
+
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+
+            getParam.Add("b", "qq");
+            getParam.Add("nk", qqnum);
+            getParam.Add("s", 5);
+
+            return http.GetImage(url, "", getParam);
+        }
+
+
+        /// <summary>
+        /// 清除cookie
+        /// </summary>
+        internal void ClearCookies()
+        {
+            http.HttpHelp();
+        }
+
+
+        /// <summary>
+        /// 设置cookie共享
+        /// </summary>
+        /// <param name="p_skey"></param>
+        /// <param name="p_uin"></param>
         internal void CookieProxy(string p_skey, string p_uin)
         {
             http.AddCookie("p_skey", p_skey, "/", "w.qq.com");
@@ -267,7 +431,11 @@ namespace SmartQQLib.API
         }
 
 
-
+        /// <summary>
+        /// 获取指定cookies
+        /// </summary>
+        /// <param name="namelist"></param>
+        /// <returns></returns>
         internal List<string> GetCookies(string[] namelist)
         {
             List<string> result = new List<string>();
@@ -289,24 +457,28 @@ namespace SmartQQLib.API
 
         }
 
-        public Image GetUserLogo(int qqnum)
+
+
+
+        internal string ReadTextFile(string path, string file)
         {
-            string url = "http://q1.qlogo.cn/g";
+            if (File.Exists(Path.Combine(path, file)))
+            {
+                string result = File.ReadAllText(Path.Combine(path, file));
+                return result;
+            }
+            else
+            {
+                Debug.Write(Path.Combine(path, file));
+                Debug.Write("文件不存在");
 
-
-            IDictionary<string, object> getParam = new Dictionary<string, object>();
-
-            getParam.Add("b", "qq");
-            getParam.Add("nk", qqnum);
-            getParam.Add("s", 5);
-            
-
-
-            return http.GetImage(url, "",getParam);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                return null;
+            }
         }
-
-
-
 
     }
 }

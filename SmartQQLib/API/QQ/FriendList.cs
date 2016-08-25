@@ -9,7 +9,7 @@ namespace SmartQQLib.API
     class FriendList
     {
         public int retcode { get; set; }
-        public Result result { get; set; }
+        public FriendList_Result result { get; set; }
     }
 
     public class Friend

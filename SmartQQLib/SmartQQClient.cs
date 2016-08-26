@@ -80,7 +80,7 @@ namespace SmartQQLib
 
                     if (Ptwebqq != "")
                     {
-                        string ReLoginResult = api.ReLoginByCookie(Ptwebqq, Status, Skey, Uin, P_skey, P_uin);
+                        string ReLoginResult = api._login_by_cookie(Ptwebqq, Status, Skey, Uin, P_skey, P_uin);
                         if (ReLoginResult != null)
                         {
                             JObject ReLogin = (JObject)JsonConvert.DeserializeObject(ReLoginResult);
@@ -172,7 +172,7 @@ namespace SmartQQLib
                 // ----------1.获取二维码
 
                 Debug.Write("[*] 正在生成二维码 ....");
-                var QRImg = api.GetQRCodeImage();
+                var QRImg = api._get_qrcode_image();
                 if (QRImg != null)
                 {
                     Debug.Write("成功\n");
@@ -184,7 +184,7 @@ namespace SmartQQLib
                 while (true)
                 {
                     Thread.Sleep(1000);
-                    var authresult = api.GetAuthStatus();
+                    var authresult = api._get_authstatus();
 
                     if (authresult.Contains("成功"))
                     {
@@ -193,7 +193,7 @@ namespace SmartQQLib
                         Debug.Write(redirect_url);
 
                         //----------2.获取ptwebqq
-                        LoginCookies.ptwebqq = api.GetPtwebqq(redirect_url);
+                        LoginCookies.ptwebqq = api._get_ptwebqq(redirect_url);
                         LoginResult.ptwebqq = LoginCookies.ptwebqq;
 
                         Debug.Write("ptwebqq=" + LoginResult.ptwebqq);
@@ -217,7 +217,7 @@ namespace SmartQQLib
                     else if (authresult.Contains("二维码已失效")|| authresult==null)
                     {
                         Debug.Write("[*] 重新生成二维码 ....");
-                        var QRImgReGet = api.GetQRCodeImage();
+                        var QRImgReGet = api._get_qrcode_image();
                         if (QRImg != null)
                         {
                             Debug.Write("成功\n");
@@ -229,7 +229,7 @@ namespace SmartQQLib
                 }
                 //----------2.获取vfwebqq
 
-                JObject Jovfwebqq = (JObject)JsonConvert.DeserializeObject(api.GetVfwebqq(LoginResult.ptwebqq));
+                JObject Jovfwebqq = (JObject)JsonConvert.DeserializeObject(api._get_vfwebqq(LoginResult.ptwebqq));
 
                 LoginCookies.vfwebqq = Jovfwebqq["result"]["vfwebqq"].ToString();
                 LoginResult.vfwebqq = LoginCookies.vfwebqq;
@@ -239,7 +239,7 @@ namespace SmartQQLib
                     return;
                 //----------登录
 
-                string strLoginCallback = api.getUinAndPsessionid(LoginResult.ptwebqq);
+                string strLoginCallback = api._login(LoginResult.ptwebqq);
                 if (strLoginCallback != null&& strLoginCallback.Contains("psessionid"))
                 {
                     JObject JoUinAndPsessionid = (JObject)JsonConvert.DeserializeObject(strLoginCallback);
@@ -298,13 +298,13 @@ namespace SmartQQLib
 
         public void ChangeState(string state)
         {
-            api.Change_State(state, LoginResult.psessionid);
+            api._change_state(state, LoginResult.psessionid);
         }
 
 
         public void recv_message()
         {
-            api.recv_message(LoginResult.ptwebqq, LoginResult.psessionid);
+            api._recv_message(LoginResult.ptwebqq, LoginResult.psessionid);
         }
     }
 }

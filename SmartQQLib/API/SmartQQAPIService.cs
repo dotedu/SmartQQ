@@ -35,7 +35,7 @@ namespace SmartQQLib.API
         /// </summary>
         /// <param name="GetQRCodeImage"></param>
         /// <returns></returns>
-        internal Image GetQRCodeImage()
+        internal Image _get_qrcode_image()
         {
             string url = "https://ssl.ptlogin2.qq.com/ptqrshow";
 
@@ -58,9 +58,8 @@ namespace SmartQQLib.API
         /// <summary>
         /// 获得二维码验证结果
         /// </summary>
-        /// <param name="GetQRCodeImage"></param>
         /// <returns></returns>
-        internal string GetAuthStatus()
+        internal string _get_authstatus()
         {
             string query_string_ul = "http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10";
 
@@ -106,9 +105,9 @@ namespace SmartQQLib.API
         /// <summary>
         /// 获得ptwebqq
         /// </summary>
-        /// <param name="AuthRedirect"></param>
+        /// <param name="redirect_url"></param>
         /// <returns></returns>
-        internal string GetPtwebqq(string redirect_url)
+        internal string _get_ptwebqq(string redirect_url)
         {
             string url = redirect_url;
 
@@ -138,9 +137,9 @@ namespace SmartQQLib.API
         /// <summary>
         /// 获得VFwebqq
         /// </summary>
-        /// <param name="GetVFwebqq"></param>
+        /// <param name="ptwebqq"></param>
         /// <returns></returns>
-        internal string GetVfwebqq(string ptwebqq)
+        internal string _get_vfwebqq(string ptwebqq)
         {
             string url = "http://s.web2.qq.com/api/getvfwebqq";
             
@@ -177,7 +176,7 @@ namespace SmartQQLib.API
         /// </summary>
         /// <param name="ptwebqq"></param>
         /// <returns></returns>
-        internal string getUinAndPsessionid(string ptwebqq)
+        internal string _login(string ptwebqq)
         {
 
             string url = "http://d1.web2.qq.com/channel/login2";
@@ -224,7 +223,7 @@ namespace SmartQQLib.API
         /// <param name="p_skey"></param>
         /// <param name="p_uin"></param>
         /// <returns></returns>
-        internal string ReLoginByCookie(string ptwebqq, string status, string skey, string uin, string p_skey, string p_uin)
+        internal string _login_by_cookie(string ptwebqq, string status, string skey, string uin, string p_skey, string p_uin)
         {
             http.AddCookie("ptwebqq", ptwebqq, "/", "qq.com");
             http.AddCookie("skey", skey, "/", "qq.com");
@@ -237,10 +236,6 @@ namespace SmartQQLib.API
 
 
             string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
-
-
-
-
 
 
             string PostJson = "{{\"ptwebqq\":\"{0}\",\"clientid\":{1}, \"psessionid\": \"\",\"status\": \"{2}\"}}";
@@ -277,7 +272,7 @@ namespace SmartQQLib.API
         /// </summary>
         /// <param name="state"></param>
         /// <param name="psessionid"></param>
-        internal void Change_State(string state, string psessionid)
+        internal void _change_state(string state, string psessionid)
         {
             string url = "http://s.web2.qq.com/api/get_self_info2";
 
@@ -311,7 +306,7 @@ namespace SmartQQLib.API
         /// 获取本人信息
         /// </summary>
         /// <returns></returns>
-        internal string GetUserInfo()
+        internal string _get_user_info()
         {
             string url = "http://s.web2.qq.com/api/get_self_info2";
 
@@ -334,13 +329,34 @@ namespace SmartQQLib.API
             }
             return null;
         }
+
+        /// <summary>
+        /// 获取QQ头像
+        /// </summary>
+        /// <param name="qqnum"></param>
+        /// <returns></returns>
+        public Image _get_user_face(int qqnum)
+        {
+            string url = "http://q1.qlogo.cn/g";
+
+
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+
+            getParam.Add("b", "qq");
+            getParam.Add("nk", qqnum);
+            getParam.Add("s", 5);
+
+            return http.GetImage(url, "", getParam);
+        }
+
+
         /// <summary>
         /// 接收消息
         /// </summary>
         /// <param name="ptwebqq"></param>
         /// <param name="psessionid"></param>
         /// <returns></returns>
-        internal string recv_message(string ptwebqq, string psessionid)
+        internal string _recv_message(string ptwebqq, string psessionid)
         {
             string url = "http://d1.web2.qq.com/channel/poll2";
 
@@ -383,8 +399,14 @@ namespace SmartQQLib.API
         //--------   ----待添加-------------------
 
 
-
-        internal string get_user_friends(long qq, string ptwebqq, string vfwebqq)
+        /// <summary>
+        ///获取好友列表(SMARTQQ)
+        /// </summary>
+        /// <param name="qq"></param>
+        /// <param name="ptwebqq"></param>
+        /// <param name="vfwebqq"></param>
+        /// <returns></returns>
+        internal string _get_user_friends(long qq, string ptwebqq, string vfwebqq)
         {
             string url = "http://s.web2.qq.com/api/get_user_friends2";
 
@@ -419,24 +441,162 @@ namespace SmartQQLib.API
         }
 
         /// <summary>
-        /// 获取QQ头像
+        /// 获取QQ好友列表（qun.QQ.COM）
         /// </summary>
-        /// <param name="qqnum"></param>
+        /// <param name="skey"></param>
         /// <returns></returns>
-        public Image GetUserLogo(int qqnum)
+        internal string _get_user_friends_ext(string skey)
         {
-            string url = "http://q1.qlogo.cn/g";
+            string url = "http://qun.qq.com/cgi-bin/qun_mgr/get_friend_list";
+
+
+            string referer = "http://qun.qq.com/member.html";
+
+
+
+            string PostJson = tool.GetBkn(skey).ToString();
+
+
+            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            postdata.Add("kbn", PostJson);
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+
+        /// <summary>
+        /// 获取好友信息
+        /// </summary>
+        /// <param name="tuin">获取好友列表时得到的uin</param>
+        /// <param name="vfwebqq"></param>
+        /// <param name="psessionid"></param>
+        /// <returns></returns>
+        internal string _get_friend_info(string tuin,string vfwebqq, string psessionid)
+        {
+            string url = "http://s.web2.qq.com/api/get_friend_info2";
+
+
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+
+                        
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+
+            getParam.Add("tuin", tuin);
+            getParam.Add("vfwebqq", vfwebqq);
+            getParam.Add("clientid", Base.clientid);
+            getParam.Add("psessionid", psessionid);
+            getParam.Add("t", tool.GetTimeStamp(DateTime.Now));
+
+            try
+            {
+                var content = http.GET(url, referer, getParam);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+        /// <summary>
+        /// 获取在线好友
+        /// </summary>
+        /// <param name="vfwebqq"></param>
+        /// <param name="psessionid"></param>
+        /// <returns></returns>
+        internal string _get_friends_state(string vfwebqq, string psessionid)
+        {
+            string url = "http://d1.web2.qq.com/channel/get_online_buddies2";
+
+
+            string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
+
 
 
             IDictionary<string, object> getParam = new Dictionary<string, object>();
 
-            getParam.Add("b", "qq");
-            getParam.Add("nk", qqnum);
-            getParam.Add("s", 5);
+            getParam.Add("vfwebqq", vfwebqq);
+            getParam.Add("clientid", Base.clientid);
+            getParam.Add("psessionid", psessionid);
+            getParam.Add("t", tool.GetTimeStamp(DateTime.Now));
 
-            return http.GetImage(url, "", getParam);
+            try
+            {
+                var content = http.GET(url, referer, getParam);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
         }
 
+        
+        /// <summary>
+        /// 通过好友列表获取的uin获取好友QQ号
+        /// </summary>
+        /// <param name="tuin"></param>
+        /// <param name="vfwebqq"></param>
+        /// <returns></returns>
+        internal string _get_qq_from_uin(string tuin, string vfwebqq)
+        {
+            string url = "http://s.web2.qq.com/api/get_friend_uin2";
+
+
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+
+            getParam.Add("tuin", tuin);
+            getParam.Add("type", 1);
+            getParam.Add("vfwebqq", vfwebqq);
+            getParam.Add("t", tool.GetTimeStamp(DateTime.Now));
+
+            try
+            {
+                var content = http.GET(url, referer, getParam);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
 
         /// <summary>
         /// 清除cookie

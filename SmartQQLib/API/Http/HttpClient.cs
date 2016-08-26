@@ -166,7 +166,7 @@ namespace SmartQQLib.API.Http
         /// <param name="requestEncoding">发送HTTP请求时所用的编码</param>  
         /// <param name="cookies">随同HTTP请求发送的Cookie信息，如果不需要身份验证可以为空</param>  
         /// <returns></returns>  
-        internal HttpWebResponse CreatePostHttpResponse(string url, string referer, string contenttype,IDictionary<string, string> parameters, int? timeout, string userAgent, Encoding requestEncoding)
+        internal HttpWebResponse CreatePostHttpResponse(string url, string referer, string contenttype,IDictionary<string, object> parameters, int? timeout, string userAgent, Encoding requestEncoding)
         {
             if (string.IsNullOrEmpty(url))
             {
@@ -179,7 +179,6 @@ namespace SmartQQLib.API.Http
             HttpWebRequest request = null;
 
             request = WebRequest.Create(url) as HttpWebRequest;
-
             request.Method = "POST";
 
             if (!string.IsNullOrEmpty(userAgent))
@@ -254,7 +253,7 @@ namespace SmartQQLib.API.Http
 
 
 
-        internal string POST(string url, string referer, string contenttype, IDictionary<string, string> parameters)
+        internal string POST(string url, string referer, string contenttype, IDictionary<string, object> parameters)
         {
             try
             {

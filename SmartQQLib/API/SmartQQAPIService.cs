@@ -191,7 +191,7 @@ namespace SmartQQLib.API
 
             Debug.Write(PostJson);
 
-            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
             postdata.Add("r", PostJson);
 
             try
@@ -243,7 +243,7 @@ namespace SmartQQLib.API
 
             Debug.Write(PostJson);
 
-            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
             postdata.Add("r", PostJson);
 
             try
@@ -349,6 +349,41 @@ namespace SmartQQLib.API
             return http.GetImage(url, "", getParam);
         }
 
+        /// <summary>
+        /// 最近消息
+        /// </summary>
+        /// <param name="vfwebqq"></param>
+        /// <param name="psessionid"></param>
+        /// <returns></returns>
+        internal string _get_recent_info(string vfwebqq, string psessionid)
+        {
+            string url = "http://d1.web2.qq.com/channel/get_recent_list2";
+            string referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
+
+
+            string PostJson = PostJson = "{{ \"vfwebqq\":\"{0}\",\"clientid\":{1},\"psessionid\":\"{2}\"}}";
+            PostJson = string.Format(PostJson, vfwebqq, Base.clientid, psessionid);
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
+            postdata.Add("r", PostJson);
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
 
         /// <summary>
         /// 接收消息
@@ -370,7 +405,7 @@ namespace SmartQQLib.API
 
             Debug.Write(PostJson);
 
-            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
             postdata.Add("r", PostJson);
 
             try
@@ -388,7 +423,6 @@ namespace SmartQQLib.API
                 Debug.WriteLine(e);
             }
             return null;
-
         }
 
 
@@ -419,7 +453,7 @@ namespace SmartQQLib.API
             PostJson = string.Format(PostJson, tool.hash(qq, ptwebqq), vfwebqq);
 
 
-            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
             postdata.Add("r", PostJson);
 
             try
@@ -457,7 +491,7 @@ namespace SmartQQLib.API
             string PostJson = tool.GetBkn(skey).ToString();
 
 
-            IDictionary<string, string> postdata = new Dictionary<string, string>();
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
             postdata.Add("kbn", PostJson);
 
             try
@@ -599,6 +633,314 @@ namespace SmartQQLib.API
         }
 
 
+
+        /// <summary>
+        /// 个性签名获取
+        /// </summary>
+        /// <param name="tuin"></param>
+        /// <param name="vfwebqq"></param>
+        /// <returns></returns>
+        internal string _get_single_long_nick(string tuin, string vfwebqq)
+        {
+            string url = "http://s.web2.qq.com/api/get_single_long_nick2";
+
+
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+
+            getParam.Add("tuin", tuin);
+            getParam.Add("vfwebqq", vfwebqq);
+            getParam.Add("t", tool.GetTimeStamp(DateTime.Now));
+
+ 
+            try
+            {
+                var content = http.GET(url, referer, getParam);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+
+
+        /// <summary>
+        /// 获取群列表（SmartQQ）
+        /// </summary>
+        /// <param name="tuin"></param>
+        /// <param name="ptwebqq"></param>
+        /// <returns></returns>
+        internal string _get_group_list_info(long qq, string ptwebqq, string vfwebqq)
+        {
+            string url = "http://s.web2.qq.com/api/get_group_name_list_mask2";
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+            string PostJson = "{{ \"hash\":\"{0}\",\"vfwebqq\":\"{1}\"}}";
+            PostJson = string.Format(PostJson, tool.hash(qq, ptwebqq), vfwebqq);
+
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
+            postdata.Add("r", PostJson);
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+ 
+        /// <summary>
+        /// 获取群列表（qun.qq.com）
+        /// </summary>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _get_group_list_info_ext(string skey)
+        {
+            string url = "http://qun.qq.com/cgi-bin/qun_mgr/get_group_list";
+
+            string referer = "http://qun.qq.com/member.html";
+
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+
+        /// <summary>
+        /// 群信息（smartqq）
+        /// </summary>
+        /// <param name="gcode"></param>
+        /// <param name="vfwebqq"></param>
+        /// <returns></returns>
+        internal string _get_group_info(string gcode, string vfwebqq)
+        {
+            string url = "http://s.web2.qq.com/api/get_group_info_ext2";
+            string referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+
+            string PostJson = "{{ \"gcode\":\"{0}\",\"vfwebqq\":\"{1}\",\"t\":\"{2}\"}}";
+            PostJson = string.Format(PostJson, gcode, vfwebqq, tool.GetTimeStamp(DateTime.Now));
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();;
+            postdata.Add("r", PostJson);
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+        /// <summary>
+        /// 群信息（QUN）
+        /// </summary>
+        /// <param name="gc"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _get_group_info_ext(long gnumber, string skey)
+        {
+            string url = "http://qun.qq.com/cgi-bin/qun_mgr/search_group_members";
+
+            string referer = "http://qun.qq.com/member.html";
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+
+            postdata.Add("gc", gnumber);
+            postdata.Add("st", 0);
+            postdata.Add("end", 2000);
+            postdata.Add("sort", 0);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+
+        /// <summary>
+        /// 邀请好友入群
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        /// 
+
+        internal string _invite_friend(long gnumber, long qq,string skey)
+        {
+            string url = "http://qun.qq.com/cgi-bin/qun_mgr/add_group_member";
+
+            string referer = "http://qun.qq.com/member.html";
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+
+            postdata.Add("gc", gnumber);
+            postdata.Add("ul", qq);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+        /// <summary>
+        /// 删除群成员
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _kick_group_member(long gnumber, long qq, string skey)
+        {
+            string url = "http://qun.qq.com/cgi-bin/qun_mgr/delete_group_member";
+
+            string referer = "http://qun.qq.com/member.html";
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+
+            postdata.Add("gc", gnumber);
+            postdata.Add("ul", qq);
+            postdata.Add("flag", 0);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
+
+
+        /// <summary>
+        /// 禁言全成员
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="time"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _shutup_group_member(long gnumber, long? qq, long? time, int? all_shutup,string skey)
+        {
+            string url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_shutup";
+
+            string referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html";
+
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            string shutup_list = "[{ \"uin\":"+ qq + ",\"t\":"+ time + "}]";
+
+            postdata.Add("gc", gnumber);
+
+            if (all_shutup==null)
+            {
+
+                postdata.Add("shutup_list", shutup_list);
+            }
+            else
+            {
+                postdata.Add("all_shutup", all_shutup);
+
+            }
+
+
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            try
+            {
+                var content = http.POST(url, referer, "", postdata);
+                http.ListCookie();
+                Debug.Write("显示返回内容");
+                Debug.Write(content);
+
+                return content;
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+
+        }
 
 
         /// <summary>

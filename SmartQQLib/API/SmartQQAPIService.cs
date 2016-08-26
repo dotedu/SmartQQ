@@ -598,6 +598,9 @@ namespace SmartQQLib.API
 
         }
 
+
+
+
         /// <summary>
         /// 清除cookie
         /// </summary>
@@ -649,9 +652,6 @@ namespace SmartQQLib.API
 
         }
 
-
-
-
         internal string ReadTextFile(string path, string file)
         {
             if (File.Exists(Path.Combine(path, file)))
@@ -661,7 +661,6 @@ namespace SmartQQLib.API
             }
             else
             {
-                Debug.Write(Path.Combine(path, file));
                 Debug.Write("文件不存在");
 
                 if (!Directory.Exists(path))

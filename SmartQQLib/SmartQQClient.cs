@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SmartQQLib.API;
-using SmartQQLib.API.Http;
+using SmartQQLib.Http;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,19 +19,13 @@ namespace SmartQQLib
     {
         public SmartQQClient()
         {
-            api = new SmartQQAPIService(new API.Http.HttpClient());
+            api = new SmartQQAPIService(new HttpProvider());
         }
         private SmartQQAPIService api = null;
 
-
         public static string cookiesFileName = "cookie.data";
 
-
-
         public bool IsLogin { get; private set; }
-
-        //public LoginResult loingresult = new LoginResult();
-
 
         internal Cookies LoginCookies;
 
@@ -70,7 +64,6 @@ namespace SmartQQLib
 
                     LoginCookies = JsonConvert.DeserializeObject<Cookies>(File.ReadAllText(Path.Combine(Environment.CurrentDirectory + "\\user\\" + loginuser, cookiesFileName)));
                     BeginReLogin?.Invoke();
-                    // Cookies CookieData = ReadCookie();
                     string Ptwebqq = LoginCookies.ptwebqq;
                     string Status = LoginCookies.status;
                     string Skey = LoginCookies.skey;
@@ -190,6 +183,7 @@ namespace SmartQQLib
                     {
                         // 扫描成功
                         string redirect_url = authresult.Split(new string[] { "\'" }, StringSplitOptions.None)[5];
+                        Debug.Write("跳转URL");
                         Debug.Write(redirect_url);
 
                         //----------2.获取ptwebqq
@@ -289,7 +283,7 @@ namespace SmartQQLib
         /// </summary>
         public void Logout()
         {
-            api.ClearCookies();
+            //api.ClearCookies();
             OnLoginOut?.Invoke();
             Debug.Write("账号已注销");
             File.Delete(Path.Combine(Environment.CurrentDirectory + "\\user\\" + LoginResult.qq, cookiesFileName));
@@ -298,13 +292,13 @@ namespace SmartQQLib
 
         public void ChangeState(string state)
         {
-            api._change_state(state, LoginResult.psessionid);
+            //api._change_state(state, LoginResult.psessionid);
         }
 
 
         public void recv_message()
         {
-            api._recv_message(LoginResult.ptwebqq, LoginResult.psessionid);
+            //api._recv_message(LoginResult.ptwebqq, LoginResult.psessionid);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace SmartQQLib.API
         public string p_skey { get; set; } = "";
         public string p_uin { get; set; } = "";
         public string uin { get; set; } = "";
+        public string qq { get; set; } = "";
 
     }
 

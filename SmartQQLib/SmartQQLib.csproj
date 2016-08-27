@@ -47,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="API\Http\HttpClient.cs" />
     <Compile Include="API\QQ\FriendList.cs" />
     <Compile Include="API\QQ\GroupList.cs" />
     <Compile Include="API\QQ\GroupMembers.cs" />
@@ -56,6 +55,12 @@
     <Compile Include="API\Result\LoginResult.cs" />
     <Compile Include="API\SmartQQAPIService.cs" />
     <Compile Include="Configure\Base.cs" />
+    <Compile Include="Http\HttpCookieType.cs" />
+    <Compile Include="Http\HttpMethodEnum.cs" />
+    <Compile Include="Http\HttpProvider.cs" />
+    <Compile Include="Http\HttpRequestParameter.cs" />
+    <Compile Include="Http\HttpResponseEnum.cs" />
+    <Compile Include="Http\HttpResponseParameter.cs" />
     <Compile Include="Plug\MainPlug.cs" />
     <Compile Include="Configure\Options.cs" />
     <Compile Include="SmartQQClient.cs" />

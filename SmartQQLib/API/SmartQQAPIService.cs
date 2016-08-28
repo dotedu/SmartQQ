@@ -372,10 +372,42 @@ namespace SmartQQLib.API
                 Debug.WriteLine(e);
             }
 
+            return null;
+        }
 
+        /// <summary>
+        /// 获取账号主显账户列表
+        /// </summary>
+        /// <param name="skey"></param>
+        /// <param name="type">0：QQ主显账户列表|1：QQ邮箱账号列表</param>
+        /// <returns></returns>
+        internal string _get_info_acc(string skey, int type)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("type", type);
+            getParam.Add("bkn", tool.GetBkn(skey).ToString());
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+
+
+            rp.Url = "http://accountadm.qq.com/cgi-bin/info_acc";
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
 
             return null;
         }
+
         /// <summary>
         /// 获取QQ头像
         /// </summary>
@@ -911,6 +943,160 @@ namespace SmartQQLib.API
             return null;
         }
         /// <summary>
+        /// 获取成员标签
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _get_member_tag(long gnumber, string skey)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("gc", gnumber);
+            getParam.Add("kbn", tool.GetBkn(skey).ToString());
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/mem_tag/get_member_tag";
+            rp.Referer = "http://qinfo.clt.qq.com/group_member_tags/index.html?groupuin=" + gnumber;
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 添加群成员标签
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="tag">标签名</param>
+        /// <returns></returns>
+        internal string _add_member_tag(long gnumber, string skey,string tag)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("tag", tag);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/mem_tag/add_member_tag";
+            rp.Referer = "http://qinfo.clt.qq.com/group_member_tags/index.html?groupuin=" + gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 删除群成员标签
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="tag_id">标签ID</param>
+        /// <returns></returns>
+        internal string _del_member_tag(long gnumber, string skey, int tag_id)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("tag_id", tag_id);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/mem_tag/del_member_tag";
+            rp.Referer = "http://qinfo.clt.qq.com/group_member_tags/index.html?groupuin=" + gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 设置成员标签
+        /// </summary>
+        /// <param name="qq"></param>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="tag_id">-1：取消标签</param>
+        /// <returns></returns>
+        internal string _set_group_mem_tag(long qq, long gnumber, string skey, int tag_id)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("uin_list", qq);
+            postdata.Add("tag_id", tag_id);
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("src", "qinfo_v3");
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_mem_tag";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+
+        /// <summary>
         /// 添加群标签
         /// </summary>
         /// <param name="gnumber">群号</param>
@@ -954,7 +1140,7 @@ namespace SmartQQLib.API
             return null;
         }
         /// <summary>
-        /// 修改群等级表情
+        /// 修改群等级标签
         /// </summary>
         /// <param name="gnumber">群号</param>
         /// <param name="skey"></param>
@@ -1038,7 +1224,7 @@ namespace SmartQQLib.API
             return null;
         }
         /// <summary>
-        /// 公共列表
+        /// 公告列表
         /// </summary>
         /// <param name="gnumber"></param>
         /// <param name="skey"></param>
@@ -1212,6 +1398,7 @@ namespace SmartQQLib.API
             }
             return null;
         }
+
         /// <summary>
         /// 获取群关注
         /// </summary>
@@ -1292,14 +1479,14 @@ namespace SmartQQLib.API
         /// <param name="delword"></param>
         /// <param name="deluin"></param>
         /// <returns>{"count":0,"ec":0}</returns>
-        internal string _set_concerned_list(long gnumber, string skey, List<string> addword, List<long> adduin, List<string> delword, List<long> deluin)
+        internal string _set_concerned_list(long gnumber, string skey, List<string> addword, List<string> adduin, List<string> delword, List<string> deluin)
         {
             IDictionary<string, object> postdata = new Dictionary<string, object>();
             postdata.Add("gc", gnumber);
-            postdata.Add("addword", addword);
-            postdata.Add("adduin", adduin);
-            postdata.Add("delword", delword);
-            postdata.Add("deluin", deluin);
+            postdata.Add("addword",tool.unicode(tool.Base64Encrypt(addword)));
+            postdata.Add("adduin", tool.unicode(adduin));
+            postdata.Add("delword", tool.unicode(tool.Base64Encrypt(delword)));
+            postdata.Add("deluin", tool.unicode(deluin));
             postdata.Add("kbn", tool.GetBkn(skey).ToString());
 
             HttpRequestParameter rp = new HttpRequestParameter();
@@ -1511,7 +1698,6 @@ namespace SmartQQLib.API
             rp.Parameters = postdata;
             rp.Cookie = mCookieType;
             //rp.Origin = "http://qinfo.clt.qq.com";
-
 
             try
             {
@@ -1906,9 +2092,68 @@ namespace SmartQQLib.API
         }
 
 
-        /// <summary>
-        /// 清楚cookie
-        /// </summary>
+        internal string _get_discu_info(string did, string vfwebqq, string psessionid)
+        {
+
+
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("did", did);
+            getParam.Add("vfwebqq", vfwebqq);
+            getParam.Add("clientid", Base.clientid);
+            getParam.Add("psessionid", psessionid);
+            getParam.Add("t", tool.GetTimeStamp(DateTime.Now));
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://d1.web2.qq.com/channel/get_discu_info";
+            rp.Referer = "http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2";
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        internal string _get_discus_list(string did, string vfwebqq, string psessionid)
+        {
+
+
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("vfwebqq", vfwebqq);
+            getParam.Add("clientid", Base.clientid);
+            getParam.Add("psessionid", psessionid);
+            getParam.Add("t", tool.GetTimeStamp(DateTime.Now));
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://s.web2.qq.com/api/get_discus_list";
+            rp.Referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }        /// <summary>
+                 /// 清楚cookie
+                 /// </summary>
         internal void ClearCookies()
         {
             http.InitCookies();
@@ -1925,8 +2170,10 @@ namespace SmartQQLib.API
             mCookieCollection.Add(new Cookie("p_uin", p_uin, "/", "w.qq.com"));
             mCookieCollection.Add(new Cookie("p_skey", p_skey, "/", "qun.qq.com"));
             mCookieCollection.Add(new Cookie("p_uin", p_uin, "/", "qun.qq.com"));
-
-            //http.ListCookie();
+            mCookieCollection.Add(new Cookie("p_skey", p_skey, "/", "id.qq.com"));
+            mCookieCollection.Add(new Cookie("p_uin", p_uin, "/", "id.qq.com"));
+            mCookieCollection.Add(new Cookie("p_skey", p_skey, "/", "mail.qq.com"));
+            mCookieCollection.Add(new Cookie("p_uin", p_uin, "/", "mail.qq.com"));
         }
 
         private void AddCookie(string name, string value, string path, string domain)

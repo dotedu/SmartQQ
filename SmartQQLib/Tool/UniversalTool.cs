@@ -3,12 +3,50 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartQQLib.API.Tool
 {
+
+
     internal class UniversalTool
     {
+
+        internal List<string> Base64Encrypt(List<string> input)
+        {
+            if (input.Count > 0 && input != null)
+            {
+
+                for (int i = 0; i < input.Count; i++)
+                {
+                    input[i] = Base64Encrypt(input[i]);
+                }
+                return input;
+            }
+            return null;
+
+        }
+
+        /// <summary>
+        /// Base64加密
+        /// </summary>
+        /// <param name="input">需要加密的字符串</param>
+        /// <returns></returns>
+        internal string Base64Encrypt(string input)
+        {
+            return Base64Encrypt(input, new UTF8Encoding());
+        }
+
+        /// <summary>
+        /// Base64加密
+        /// </summary>
+        /// <param name="input">需要加密的字符串</param>
+        /// <param name="encode">字符编码</param>
+        /// <returns></returns>
+        internal string Base64Encrypt(string input, Encoding encode)
+        {
+            return Convert.ToBase64String(encode.GetBytes(input));
+        }
+
         /// <summary>
         /// 获取1970-01-01至dateTime的毫秒数
         /// </summary>
@@ -74,6 +112,33 @@ namespace SmartQQLib.API.Tool
             int t = 2147483647 & hash;
             return t;
         }
+
+        internal string unicode(List<string> type)
+        {
+
+            if (type.Count > 0&& type!=null)
+            {
+                StringBuilder data = new StringBuilder(string.Empty);
+
+                for (int i = 0; i < type.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        data.AppendFormat("{0}", type[i]);
+
+                    }
+                    else
+                    {
+                        data.AppendFormat("-{0}", type[i]);
+
+                    }
+
+                }
+                return data.ToString();
+            }
+            return "";
+        }
+
 
         /// <summary>
         /// 获取目录文件夹下的所有子目录

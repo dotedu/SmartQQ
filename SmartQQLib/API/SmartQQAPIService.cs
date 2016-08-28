@@ -857,6 +857,511 @@ namespace SmartQQLib.API
             }
             return null;
         }
+
+        /// <summary>
+        /// 修改群信息 
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="skey"></param>
+        /// <param name="name"></param>
+        /// <param name="classid"></param>
+        /// <param name="classtag"></param>
+        /// <param name="gintro"></param>
+        /// <param name="grintro"></param>
+        /// <returns>{"ec":0,"gc":579512715}</returns>
+        internal string _set_group_info_new(long gnumber, long qq,string skey, string name, long classid,string classtag,string gintro,string grintro)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("src", "qinfo_v3");
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("classID", classid);
+            postdata.Add("class", classtag);
+            postdata.Add("fOthers", 1);
+            postdata.Add("Name", name);
+            postdata.Add("gIntro", gintro);
+            postdata.Add("gRIntro", grintro);
+            postdata.Add("Remark", 0);
+            postdata.Add("nWeb", 1);
+
+           HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_info_new";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/profile.html?groupuin="+ gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 添加群标签
+        /// </summary>
+        /// <param name="gnumber">群号</param>
+        /// <param name="skey"></param>
+        /// <param name="op">1:增加|2：删除</param>
+        /// <param name="tag"></param>
+        /// <returns>{"ec":0,"gc":579512715,"md":"12081dbd5992b1343b2c63f8ef11bb6c"}|{"ec":0,"gc":579512715}</returns>
+        internal string _set_group_more_cache(long gnumber, string skey, int op, string tag,string md)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("src", "qinfo_v3");
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("tag", tag);
+            postdata.Add("op", op);
+            postdata.Add("md", md);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_more_cache";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html?groupuin=" + gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 修改群等级表情
+        /// </summary>
+        /// <param name="gnumber">群号</param>
+        /// <param name="skey"></param>
+        /// <param name="lvln1">等级1标签</param>
+        /// <param name="lvln2">等级2标签</param>
+        /// <param name="lvln3">等级3标签</param>
+        /// <param name="lvln4">等级4标签</param>
+        /// <param name="lvln5">等级5标签</param>
+        /// <param name="lvln6">等级6标签</param>
+        /// <returns></returns>
+        internal string _set_group_level_info(long gnumber, string skey, string lvln1, string lvln2, string lvln3, string lvln4, string lvln5, string lvln6)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("lvln1", lvln1);
+            postdata.Add("lvln2", lvln2);
+            postdata.Add("lvln3", lvln3);
+            postdata.Add("lvln4", lvln4);
+            postdata.Add("lvln5", lvln5);
+            postdata.Add("lvln6", lvln6);
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("src", "qinfo_v3");
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_level_info";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/grade.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+
+        internal string _get_group_subscribe_status(long gnumber, string skey)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("scode_only", 1);
+            
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qun.qq.com/cgi-bin/group_subscribe/get_group_subscribe_status";
+            rp.Referer = "http://web.qun.qq.com/announce/index.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://web.qun.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 公共列表
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="n">显示数量</param>
+        /// <param name="s">未知，默认0</param>
+        /// <returns></returns>
+        internal string _get_announce_list(long gnumber, string skey,int n,int s)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("ft", 23);
+            postdata.Add("n", n);
+            postdata.Add("s", s);
+            postdata.Add("i", 1);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://web.qun.qq.com/cgi-bin/announce/get_t_list";
+            rp.Referer = "http://web.qun.qq.com/announce/index.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://web.qun.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 本群须知
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="title"></param>
+        /// <param name="text"></param>
+        /// <param name="gsi"></param>
+        /// <returns></returns>
+        internal string _add_qun_notice(long gnumber, string skey, string title, string text, string gsi)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("qid", gnumber);
+            postdata.Add("title", title);
+            postdata.Add("text", text);
+            postdata.Add("gsi", gsi);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://web.qun.qq.com/cgi-bin/announce/add_qun_instruction";
+            rp.Referer = "http://web.qun.qq.com/announce/index.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://web.qun.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 发布群公告
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="title"></param>
+        /// <param name="text"></param>
+        /// <param name="gsi">获取群列表时获得</param>
+        /// <returns></returns>
+        internal string _add_announce_feed(long gnumber, string skey, string title, string text,string gsi)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("qid", gnumber);
+            postdata.Add("title", title);
+            postdata.Add("text", text);
+            postdata.Add("gsi", gsi);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://web.qun.qq.com/cgi-bin/announce/add_qun_notice";
+            rp.Referer = "http://web.qun.qq.com/announce/index.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://web.qun.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 删除群公告
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="fid">公告ID</param>
+        /// <param name="gsi">获取群公告列表时获得</param>
+        /// <returns>{"ec":0,"fid":"8ba98a220000000023afc157283d0c00","id":1,"lstm":1472313468}</returns>
+        internal string _del_announce_feed(long gnumber, string skey, string fid, string gsi)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("fid", fid);
+            postdata.Add("ft", 23);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("qid", gnumber);
+            postdata.Add("op", 0);
+            postdata.Add("gsi", gsi);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://web.qun.qq.com/cgi-bin/announce/del_feed";
+            rp.Referer = "http://web.qun.qq.com/announce/index.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://web.qun.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 获取群关注
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+
+        internal string _clear_red_point(long gnumber, string skey, string gsi)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("qid", gnumber);
+            postdata.Add("gsi", gsi);
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://web.qun.qq.com/cgi-bin/announce/clear_red_point";
+            rp.Referer = "http://web.qun.qq.com/announce/index.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://web.qun.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 获取特别关注设置
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <returns>{"ec":0,"flag":1,"gc":579512715,"uinls":[{"from":1,"n":"测试","u":43430833}],"wordls":[{"keyword":"红包"}]}</returns>
+        internal string _get_concerned_list(long gnumber, string skey)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("gc", gnumber);
+            getParam.Add("kbn", tool.GetBkn(skey).ToString());
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qun.qq.com/cgi-bin/care/get_concerned_list";
+            rp.Referer = "http://qun.qq.com/care/index.html?gc=" + gnumber;
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 设置特别关注
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="addword"></param>
+        /// <param name="adduin"></param>
+        /// <param name="delword"></param>
+        /// <param name="deluin"></param>
+        /// <returns>{"count":0,"ec":0}</returns>
+        internal string _set_concerned_list(long gnumber, string skey, List<string> addword, List<long> adduin, List<string> delword, List<long> deluin)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("addword", addword);
+            postdata.Add("adduin", adduin);
+            postdata.Add("delword", delword);
+            postdata.Add("deluin", deluin);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qun.qq.com/cgi-bin/care/set_concerned_list";
+            rp.Referer = "http://qun.qq.com/care/index.html?gc=" + gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://web.qun.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 群最新消息聊天框提示
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <param name="fnum">显示数量</param>
+        /// <returns></returns>
+        internal string _get_data_new_notice(long gnumber, string skey,int fnum)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("qid", gnumber);
+            getParam.Add("fnum", fnum);
+            getParam.Add("bkn", tool.GetBkn(skey).ToString());
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://web.qun.qq.com/cgi-bin/notice/get_data_new";
+            //rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html?groupuin=" + gnumber;
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
         /// <summary>
         /// 邀请好友入群
         /// </summary>
@@ -982,6 +1487,174 @@ namespace SmartQQLib.API
             return null;
         }
 
+        /// <summary>
+        /// 设置管理员（QUN API）
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="op"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _set_group_admin_2(long gnumber, long qq, int op, string skey)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("ul", qq);
+            postdata.Add("op", op);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qun.qq.com/cgi-bin/qun_mgr/set_group_admin";
+            rp.Referer = "http://qun.qq.com/member.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            //rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 设置管理员（客户端API）
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="op"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _set_group_admin(long gnumber, long qq, int op,string skey)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("u", qq);
+            postdata.Add("op", op);
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("src", "qinfo_v3");
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_admin";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html?groupuin="+ gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 设置成员名片（QUN API）
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="name"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _set_group_card_2(long gnumber, long qq, string name, string skey)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("u", qq);
+            postdata.Add("name", name);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qun.qq.com/cgi-bin/qun_mgr/set_group_card";
+            rp.Referer = "http://qun.qq.com/member.html";
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            //rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 设置群名片（客户端API）
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="qq"></param>
+        /// <param name="name"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _set_group_card(long gnumber, long qq, string name, string skey)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("u", qq);
+            postdata.Add("name", name);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("src", "qinfo_v3");
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/set_group_card";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html?groupuin=" + gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
         internal string _get_group_info_all(long gnumber, string skey)
         {
             IDictionary<string, object> getParam = new Dictionary<string, object>();
@@ -1040,6 +1713,202 @@ namespace SmartQQLib.API
             return null;
         }
 
+        internal string _get_group_mem_tag(long gnumber, long qq, string skey)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("src", "qinfo_v3");
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/get_group_mem_tag";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html?groupuin=" + gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        internal string _get_member_tag_flag(long gnumber, long qq, string skey)
+        {
+            IDictionary<string, object> postdata = new Dictionary<string, object>();
+            postdata.Add("gc", gnumber);
+            postdata.Add("kbn", tool.GetBkn(skey).ToString());
+            postdata.Add("src", "qinfo_v3");
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/get_member_tag_flag";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member.html?groupuin=" + gnumber;
+            rp.Method = HttpMethodEnum.Post;
+            rp.Parameters = postdata;
+            rp.Cookie = mCookieType;
+            rp.Origin = "http://qinfo.clt.qq.com";
+
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+                Debug.Write("显示返回内容");
+                Debug.Write(result.Body);
+                return result.Body;
+
+            }
+            catch (Exception e)
+            {
+
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+        /// <summary>
+        /// 群操作历史
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _get_group_member_log(long gnumber, string skey)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("gc", gnumber);
+            getParam.Add("bkn", tool.GetBkn(skey).ToString());
+            getParam.Add("src", "qinfo_v3");
+            getParam.Add("_ti", tool.GetTimeStamp(DateTime.Now));
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/get_sys_msg";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/member-log.html";
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+
+        internal string _get_group_setting(long gnumber, string skey)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("gc", gnumber);
+            getParam.Add("bkn", tool.GetBkn(skey).ToString());
+            getParam.Add("src", "qinfo_v3");
+            getParam.Add("_ti", tool.GetTimeStamp(DateTime.Now));
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/get_group_setting";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/setting.html?groupuin=" + gnumber;
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+
+        internal string _get_admin_auth(long gnumber, string skey)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("auth", 1);
+            getParam.Add("gc", gnumber);
+            getParam.Add("bkn", tool.GetBkn(skey).ToString());
+            getParam.Add("src", "qinfo_v3");
+            getParam.Add("_ti", tool.GetTimeStamp(DateTime.Now));
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/get_admin_auth";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/setting.html?groupuin=" + gnumber;
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 获取禁言设置（需管理员权限）
+        /// </summary>
+        /// <param name="gnumber"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        internal string _get_group_shutup(long gnumber, string skey)
+        {
+            IDictionary<string, object> getParam = new Dictionary<string, object>();
+            getParam.Add("gc", gnumber);
+            getParam.Add("bkn", tool.GetBkn(skey).ToString());
+            getParam.Add("src", "qinfo_v3");
+            getParam.Add("_ti", tool.GetTimeStamp(DateTime.Now));
+
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
+            rp.Url = "http://qinfo.clt.qq.com/cgi-bin/qun_info/get_group_shutup";
+            rp.Referer = "http://qinfo.clt.qq.com/qinfo_v3/setting.html?groupuin=" + gnumber;
+            rp.Parameters = getParam;
+            rp.Cookie = mCookieType;
+
+            try
+            {
+                HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                return result.Body;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+            }
+            return null;
+        }
+
+
+        /// <summary>
+        /// 清楚cookie
+        /// </summary>
         internal void ClearCookies()
         {
             http.InitCookies();

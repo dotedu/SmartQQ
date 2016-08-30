@@ -350,11 +350,11 @@ namespace SmartQQLib.API
         /// <returns></returns>
         internal string _get_user_info()
         {
-            HttpRequestParameter rp = new HttpRequestParameter();
-            mCookieType.CookieCollection = mCookieCollection;
             IDictionary<string, object> getParam = new Dictionary<string, object>();
 
             getParam.Add("t", Random_DT);
+            HttpRequestParameter rp = new HttpRequestParameter();
+            mCookieType.CookieCollection = mCookieCollection;
 
             rp.Url = "http://s.web2.qq.com/api/get_self_info2";
             rp.Referer = "http://s.web2.qq.com/proxy.html?v=20130916001&callback=1&id=1";

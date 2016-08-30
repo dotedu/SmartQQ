@@ -13,7 +13,7 @@ namespace SmartQQLib.API
         public int year { get; set; }
         public int day { get; set; }
     }
-    public class UserResult
+    public class UserInfo
     {
         public UserBirthday birthday { get; set; }
         public int face { get; set; }

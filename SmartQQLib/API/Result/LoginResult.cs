@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartQQLib.API
 {
-    public class LoginResult
+    public static class LoginResult
     {
         public static string qq { get; set; } = "";
         public static string psessionid { get; set; } = "";

@@ -289,16 +289,19 @@ namespace SmartQQLib
             File.Delete(Path.Combine(Environment.CurrentDirectory + "\\user\\" + LoginResult.qq, cookiesFileName));
         }
 
-
+        /// <summary>
+        /// 更改在线状态
+        /// </summary>
+        /// <param name="state">online|callme|away|busy|silent|hidden|offline</param>
         public void ChangeState(string state)
         {
-            //api._change_state(state, LoginResult.psessionid);
+            api._change_state(state, LoginResult.psessionid);
         }
 
 
-        public void recv_message()
+        public void Poll2()
         {
-            //api._recv_message(LoginResult.ptwebqq, LoginResult.psessionid);
+            api._recv_message(LoginResult.ptwebqq, LoginResult.psessionid);
         }
     }
 }

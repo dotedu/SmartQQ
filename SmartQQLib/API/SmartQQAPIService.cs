@@ -24,6 +24,7 @@ namespace SmartQQLib.API
             http = httpProvider;
 
         }
+        string qrsig;
 
         private HttpCookieType mCookieType = new HttpCookieType();
 
@@ -60,7 +61,6 @@ namespace SmartQQLib.API
             getParam.Add("t", Random_DT);
             TimeStampGetQR = tool.GetTimeStamp(DateTime.Now);
 
-
             rp.Url = "https://ssl.ptlogin2.qq.com/ptqrshow";
             rp.Parameters = getParam;
             rp.Cookie = mCookieType;
@@ -73,6 +73,8 @@ namespace SmartQQLib.API
             try
             {
                 HttpResponseParameter result = HttpProvider.Execute(rp);
+
+                qrsig = http.GetCookie("qrsig");
                 return grcode;
             }
             catch (Exception e)
@@ -84,6 +86,17 @@ namespace SmartQQLib.API
 
         }
 
+        private static int hash33(string s)
+        {
+            int e = 0, n = s.Length;
+            for (int i = 0; n > i; ++i) { 
+            var s1 = e << 5;
+                char s2 = Convert.ToChar(s.Substring(i, 1));
+            var s3 = (int)(s2);
+                e += s1+s3;
+            }
+            return 2147483647 & e;
+        }
 
         /// <summary>
         /// 获得二维码验证结果
@@ -95,16 +108,17 @@ namespace SmartQQLib.API
             HttpRequestParameter rp = new HttpRequestParameter();
             mCookieType.CookieCollection = mCookieCollection;
 
-            string query_string_ul = HttpUtility.UrlDecode("http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10");
+            string query_string_ul = "https%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10&";
 
             object query_string_action = "0-0-"+ (tool.GetTimeStamp(DateTime.Now) - TimeStampGetQR);
 
             IDictionary<string, object> getParam = new Dictionary<string, object>();
-
+            
+            getParam.Add("ptqrtoken", hash33(qrsig));
             getParam.Add("webqq_type", 10);
             getParam.Add("remember_uin", 1);
             getParam.Add("login2qq", 1);
-            getParam.Add("aid", Base.g_appid);
+            getParam.Add("aid", 501004106);
             getParam.Add("u1", query_string_ul);
             getParam.Add("h", 1);
             getParam.Add("ptredirect", 0);
@@ -123,11 +137,19 @@ namespace SmartQQLib.API
             getParam.Add("login_sig", "");
             getParam.Add("pt_randsalt", Base.isRandSalt);
 
-            rp.Url = "https://ssl.ptlogin2.qq.com/ptqrlogin";
+            rp.Url = "https://ssl.ptlogin2.qq.com/ptqrlogin?" +
+                                "ptqrtoken="+ hash33(qrsig) + "&webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&" +
+                                "u1=https%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10&" +
+                                "ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert&0-0-157510&" +
+                                "mibao_css=m_webqq&t=undefined&g=1&js_type=0&js_ver=10184&login_sig=&pt_randsalt=3";
             //Debug.Write(url);
+            
 
-            rp.Parameters = getParam;
-            rp.Referer = "https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1 &s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert &strong_login=1&login_state=10&t=20131024001";
+
+            //rp.Parameters = getParam;
+            rp.Referer = "https://ui.ptlogin2.qq.com/cgi-bin/login?" +
+                    "daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1&" +
+                    "s_url=https%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001";
             rp.Cookie = mCookieType;
 
             try
